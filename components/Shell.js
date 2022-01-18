@@ -48,19 +48,16 @@ export default function Shell({ children }) {
                 className="side-nav ui-03"
               >
                 <SideNavItems>
-                  <SideNavLink renderIcon={ColorPalette16} href="/create">
+                  <SideNavLink renderIcon={ColorPalette16} href="#">
                     Create
                   </SideNavLink>
-                  <SideNavLink renderIcon={ShoppingCatalog16} href="/browse">
+                  <SideNavLink renderIcon={ShoppingCatalog16} href="#">
                     Browse
                   </SideNavLink>
-                  <SideNavLink
-                    renderIcon={ChartBubblePacked16}
-                    href="/myTokens"
-                  >
+                  <SideNavLink renderIcon={ChartBubblePacked16} href="#">
                     My NFTs
                   </SideNavLink>
-                  <SideNavLink renderIcon={HeatMap16} href="/creator">
+                  <SideNavLink renderIcon={HeatMap16} href="#">
                     Creator Dashboard
                   </SideNavLink>
                 </SideNavItems>

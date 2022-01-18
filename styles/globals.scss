@@ -1,14 +1,47 @@
+@import 'carbon-components/scss/globals/grid/grid';
 @import 'carbon-components/scss/components/ui-shell/ui-shell';
+@import 'carbon-components/scss/components/button/button';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+$text-01: #fafafa;
+$ui-01: #171717;
+$ui-02: #262626;
+$ui-03: #44403c;
+
+@import '../components/shell.scss';
+
 .text-gradient span {
-    background-color: #e79e8f;
-    background-image: linear-gradient(133deg, #e79e8f, #9495bc);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -moz-background-clip: text;
-    -moz-text-fill-color: transparent;
+  background-color: #e79e8f;
+  background-image: linear-gradient(133deg, #e79e8f, #9495bc);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
+}
+
+.tokensBG {
+  background-image: url('../assets/tokens.png');
+}
+
+.comingSoonBanner {
+  width: calc(100vw - 48px);
+  height: calc(100vh - 48px);
+  background: #262626aa;
+  backdrop-filter: blur(10px);
+}
+
+.gradientBG {
+  background: linear-gradient(133deg, #e79e8f, #9495bc, #9495bc);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  border: none;
+  transition: background-position 0.75s;
+
+  &:hover {
+    background-position: 100% 100%;
+  }
 }

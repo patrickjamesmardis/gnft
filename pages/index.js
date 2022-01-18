@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { Button } from 'carbon-components-react';
 
 export default function Home() {
   return (
@@ -12,7 +13,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1 className="text-3xl font-bold px-3 py-3">Hello, world + vercel!</h1>
+      <div className="fixed top-0 left-0 w-screen h-screen bg-stone-900 text-stone-50 tokensBG">
+        <div className="comingSoonBanner mt-12 ml-12 p-3 flex flex-col items-center justify-center">
+          <h1 className="text-3xl mb-3">GNFT</h1>
+          <p className="mb-3 text-center">
+            A place to create, mint, and collect generative&nbsp;art&nbsp;NFTs.
+          </p>
+          <div className="gradientBG py-3 px-6 mt-2">
+            <p>Coming Soon</p>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
