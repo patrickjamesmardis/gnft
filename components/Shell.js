@@ -11,12 +11,7 @@ import {
   SkipToContent,
 } from 'carbon-components-react';
 
-import {
-  ChartBubblePacked16,
-  ColorPalette16,
-  HeatMap16,
-  ShoppingCatalog16,
-} from '@carbon/icons-react';
+import { ChartBubblePacked16, ColorPalette16, HeatMap16, ShoppingCatalog16 } from '@carbon/icons-react';
 
 export default function Shell({ children }) {
   return (

@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"**/*.{js,css,scss,json}\" --single-quote"
+    "format": "prettier --write \"**/*.{js,css,scss,json}\" --single-quote --print-width 120"
   },
   "dependencies": {
     "@carbon/icons-react": "^10.44.0",
