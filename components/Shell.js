@@ -10,10 +10,12 @@ import {
   SideNavLink,
   SkipToContent,
 } from 'carbon-components-react';
-
 import { ChartBubblePacked16, ColorPalette16, HeatMap16, ShoppingCatalog16 } from '@carbon/icons-react';
+import { useContext } from 'react';
+import { WalletContext } from '../context/Wallet';
 
 export default function Shell({ children }) {
+  const { connect, currentAccount, prettyAddress, walletError } = useContext(WalletContext);
   return (
     <>
       <HeaderContainer
@@ -31,8 +33,17 @@ export default function Shell({ children }) {
                 {' '}
               </HeaderName>
               <HeaderNavigation aria-label="Connect wallet">
-                <HeaderMenuItem href="#" className="text-gradient">
-                  Connect wallet
+                <HeaderMenuItem
+                  className="text-gradient"
+                  onClick={() => {
+                    connect();
+                  }}
+                >
+                  {walletError?.chainId
+                    ? 'Please connect your wallet to the Polygon Mumbai Testnet'
+                    : currentAccount
+                    ? `Connected to ${prettyAddress(currentAccount)}`
+                    : 'Connect wallet'}
                 </HeaderMenuItem>
               </HeaderNavigation>
               <SideNav

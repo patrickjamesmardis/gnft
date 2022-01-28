@@ -1,11 +1,14 @@
 import '../styles/globals.scss';
+import Wallet from '../context/Wallet';
 
 import Shell from '../components/Shell';
 function MyApp({ Component, pageProps }) {
   return (
-    <Shell>
-      <Component {...pageProps} />
-    </Shell>
+    <Wallet>
+      <Shell>
+        <Component {...pageProps} />
+      </Shell>
+    </Wallet>
   );
 }
 
