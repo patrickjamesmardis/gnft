@@ -1,30 +1,29 @@
 const { expect } = require('chai');
 
 describe('GNFT + GNFTMarket', () => {
-  let market, gnft, owner, addr1, addr2, addr3, addr4, addrs, marketAddress, gnftAddress;
+  let market, gnft, owner, addr1, addr2, addr3, addr4, marketAddress, gnftAddress;
   let sellPrice = ethers.utils.parseUnits('100', 'ether');
   let tokenUri1 = 'https://token-uri-1.com';
   let tokenUri2 = 'https://token-uri-2.com';
   let nullAddress = '0x0000000000000000000000000000000000000000';
 
   beforeEach(async () => {
-    [owner, addr1, addr2, addr3, addr4, ...addrs] = await ethers.getSigners();
+    [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();
     const Market = await ethers.getContractFactory('GNFTMarket');
     market = await Market.deploy();
     await market.deployTransaction.wait();
     marketAddress = market.address;
 
     const GNFT = await ethers.getContractFactory('GNFT');
-    gnft = await GNFT.deploy(marketAddress);
+    gnft = await GNFT.deploy();
     await gnft.deployTransaction.wait();
     gnftAddress = gnft.address;
-  });
 
-  describe('GNFT.deploy()', () => {
-    it('Should store the correct market contract address', async () => {
-      const marketContractAddress = await gnft.getMarketAddress();
-      expect(marketContractAddress).to.equal(marketAddress);
-    });
+    await gnft.connect(owner).setApprovalForAll(marketAddress, true);
+    await gnft.connect(addr1).setApprovalForAll(marketAddress, true);
+    await gnft.connect(addr2).setApprovalForAll(marketAddress, true);
+    await gnft.connect(addr3).setApprovalForAll(marketAddress, true);
+    await gnft.connect(addr4).setApprovalForAll(marketAddress, true);
   });
 
   describe('GNFT.mintToken()', () => {

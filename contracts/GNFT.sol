@@ -9,16 +9,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 contract GNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _ids;
-    address private _marketContract;
     mapping(uint256 => address) private _artists;
 
-    constructor(address marketAddress) ERC721("GeNFT", "GNFT") {
-        _marketContract = marketAddress;
-    }
-
-    function getMarketAddress() public view returns (address) {
-        return _marketContract;
-    }
+    constructor() ERC721("GeNFT", "GNFT") {}
 
     function mintToken(string memory _tokenURI) public returns (uint256) {
         _ids.increment();
@@ -26,7 +19,6 @@ contract GNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
         _safeMint(msg.sender, newId);
         _setTokenURI(newId, _tokenURI);
         _setArtistOf(newId, msg.sender);
-        setApprovalForAll(_marketContract, true);
         return newId;
     }
 
