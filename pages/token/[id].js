@@ -31,7 +31,7 @@ export default function Token() {
     fetchURI();
   }, [id]);
 
-  useEffect(async () => {
+  useEffect(() => {
     const fetchData = async () => {
       if (tokenURI) {
         axios.get(tokenURI).then((data) => setTokenData(data.data));
