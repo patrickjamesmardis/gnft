@@ -32,24 +32,27 @@ const Wallet = function ({ children }) {
   const [mintStatus, setMintStatus] = useState('Mint Sketch');
 
   useEffect(async () => {
-    if (provider?.provider) {
-      provider.listAccounts().then((a) => {
-        setAccounts(a);
-      });
-      provider.provider.on('accountsChanged', setAccounts);
-      provider.provider.on('disconnect', () => {
-        setAccounts([]);
-      });
-      provider.provider.on('chainChanged', (chainId) => {
-        chainId !== 80001 && chainId !== '0x13881' ? setWalletError({ chainId }) : setWalletError(null);
-        console.log(chainId);
-      });
-      provider.provider.on('message', console.log);
+    const connectAccounts = async () => {
+      if (provider?.provider) {
+        provider.listAccounts().then((a) => {
+          setAccounts(a);
+        });
+        provider.provider.on('accountsChanged', setAccounts);
+        provider.provider.on('disconnect', () => {
+          setAccounts([]);
+        });
+        provider.provider.on('chainChanged', (chainId) => {
+          chainId !== 80001 && chainId !== '0x13881' ? setWalletError({ chainId }) : setWalletError(null);
+          console.log(chainId);
+        });
+        provider.provider.on('message', console.log);
 
-      const { chainId } = await provider.getNetwork();
-      chainId !== 80001 ? setWalletError({ chainId }) : setWalletError(null);
-      console.log(chainId);
-    }
+        const { chainId } = await provider.getNetwork();
+        chainId !== 80001 ? setWalletError({ chainId }) : setWalletError(null);
+        console.log(chainId);
+      }
+    };
+    connectAccounts();
   }, [provider]);
 
   useEffect(() => {

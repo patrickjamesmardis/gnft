@@ -15,14 +15,6 @@ import { forwardRef, useContext } from 'react';
 import Link from 'next/link';
 import { WalletContext } from '../context/Wallet';
 
-const HName = forwardRef(({ onClick, href }, ref) => {
-  return (
-    <HeaderName prefix="GNFT" href={href} onClick={onClick} ref={ref}>
-      {' '}
-    </HeaderName>
-  );
-});
-
 export default function Shell({ children }) {
   const { connect, currentAccount, prettyAddress, walletError } = useContext(WalletContext);
   return (
@@ -39,7 +31,7 @@ export default function Shell({ children }) {
                 isActive={isSideNavExpanded}
               />
               <Link href="/" passHref>
-                <HName />
+                <HeaderName prefix="GNFT"> </HeaderName>
               </Link>
               <HeaderNavigation aria-label="Connect wallet">
                 <HeaderMenuItem

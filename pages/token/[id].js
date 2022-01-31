@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 // import ethers from 'ethers';
@@ -13,31 +14,31 @@ export default function Token() {
   const router = useRouter();
   const { id } = router.query;
 
-  useEffect(async () => {
-    if (id) {
-      if (!gnftContract) {
-        console.log(id);
-        const contract = connectDefaultProvider();
-        const uri = await contract.tokenURI(id);
-        setTokenURI(uri);
-      } else {
-        const uri = await gnftContract.tokenURI(id);
-        setTokenURI(uri);
+  useEffect(() => {
+    const fetchURI = async () => {
+      if (id) {
+        if (!gnftContract) {
+          console.log(id);
+          const contract = connectDefaultProvider();
+          const uri = await contract.tokenURI(id);
+          setTokenURI(uri);
+        } else {
+          const uri = await gnftContract.tokenURI(id);
+          setTokenURI(uri);
+        }
       }
-    }
+    };
+    fetchURI();
   }, [id]);
 
   useEffect(async () => {
-    if (tokenURI) {
-      axios.get(tokenURI).then((data) => setTokenData(data.data));
-    }
+    const fetchData = async () => {
+      if (tokenURI) {
+        axios.get(tokenURI).then((data) => setTokenData(data.data));
+      }
+    };
+    fetchData();
   }, [tokenURI]);
-
-  useEffect(() => {
-    if (tokenData) {
-      console.log(tokenData);
-    }
-  }, [tokenData]);
 
   return (
     <>
@@ -54,7 +55,13 @@ export default function Token() {
           {tokenData && (
             <>
               <p className="pt-2">Artist: {tokenData.artist}</p>
-              <img className="pt-2" src={tokenData.image} alt={`${tokenData.name}: ${tokenData.description}`} />
+              <Image
+                className="pt-2"
+                src={tokenData.image}
+                alt={`${tokenData.name}: ${tokenData.description}`}
+                width={500}
+                height={500}
+              />
               <p className="pt-2">{tokenData.description}</p>
             </>
           )}
@@ -67,7 +74,12 @@ export default function Token() {
                 <code>{tokenData.sourceCode}</code>
               </pre>
               <h3 className="text-2xl pt-4 pb-2">Token Contract</h3>
-              <a className="underline" href={`https://mumbai.polygonscan.com/address/${gnftAddress}`} target="_blank">
+              <a
+                className="underline"
+                href={`https://mumbai.polygonscan.com/address/${gnftAddress}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {gnftAddress}
               </a>
               <p>Token #{id}</p>
