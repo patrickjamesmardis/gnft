@@ -6,6 +6,7 @@ export default function Home() {
       <Head>
         <title>GNFT</title>
         <meta name="description" content="Create, mint, and collect generative art NFTs." />
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

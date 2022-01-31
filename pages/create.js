@@ -13,18 +13,19 @@ export default function Create() {
       <Head>
         <title>GNFT | Create</title>
         <meta name="description" content="Create, mint, and collect generative art NFTs." />
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Sketch>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full pt-4">
-          <div id="editorContainer" className="h-96 lg:h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 pt-4">
+          <div className="h-96 lg:h-full editorContainer" style={{ marginBottom: '80px' }}>
             <Editor />
           </div>
-          <div id="sketchContainer">
+          <div className="sketchContainer">
             <P5Sketch />
           </div>
           <div></div>
-          <div>
+          <div className="controlsContainer">
             <SketchControls />
           </div>
         </div>

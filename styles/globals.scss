@@ -57,3 +57,19 @@ $ui-03: #44403c;
 .ace_gutter {
   z-index: auto !important;
 }
+
+@media (max-width: 1023px) {
+  .editorContainer #braceEditor {
+    width: calc(100vw - 48px);
+  }
+
+  .sketchContainer canvas {
+    max-width: calc(100vw - 48px);
+    max-height: calc(100vw - 48px);
+  }
+
+  .controlsContainer .gradientBG,
+  .controlsContainer .gradientBG-2 {
+    max-width: calc(100vw - 48px);
+  }
+}
