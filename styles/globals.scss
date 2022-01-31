@@ -36,6 +36,14 @@ $ui-03: #44403c;
 
 .gradientBG {
   background: linear-gradient(133deg, #e79e8f, #9495bc, #9495bc);
+}
+
+.gradientBG-2 {
+  background: linear-gradient(133deg, #a8a29e, #9495bc, #9495bc);
+}
+
+.gradientBG,
+.gradientBG-2 {
   background-size: 200% 200%;
   background-position: 0% 0%;
   border: none;
@@ -44,4 +52,8 @@ $ui-03: #44403c;
   &:hover {
     background-position: 100% 100%;
   }
+}
+
+.ace_gutter {
+  z-index: auto !important;
 }

@@ -11,8 +11,17 @@ import {
   SkipToContent,
 } from 'carbon-components-react';
 import { ChartBubblePacked16, ColorPalette16, HeatMap16, ShoppingCatalog16 } from '@carbon/icons-react';
-import { useContext } from 'react';
+import { forwardRef, useContext } from 'react';
+import Link from 'next/link';
 import { WalletContext } from '../context/Wallet';
+
+const HName = forwardRef(({ onClick, href }, ref) => {
+  return (
+    <HeaderName prefix="GNFT" href={href} onClick={onClick} ref={ref}>
+      {' '}
+    </HeaderName>
+  );
+});
 
 export default function Shell({ children }) {
   const { connect, currentAccount, prettyAddress, walletError } = useContext(WalletContext);
@@ -29,9 +38,9 @@ export default function Shell({ children }) {
                 onClick={onClickSideNavExpand}
                 isActive={isSideNavExpanded}
               />
-              <HeaderName href="/" prefix="GNFT">
-                {' '}
-              </HeaderName>
+              <Link href="/" passHref>
+                <HName />
+              </Link>
               <HeaderNavigation aria-label="Connect wallet">
                 <HeaderMenuItem
                   className="text-gradient"
@@ -54,18 +63,18 @@ export default function Shell({ children }) {
                 className="side-nav ui-03"
               >
                 <SideNavItems>
-                  <SideNavLink renderIcon={ColorPalette16} href="#">
-                    Create
-                  </SideNavLink>
-                  <SideNavLink renderIcon={ShoppingCatalog16} href="#">
-                    Browse
-                  </SideNavLink>
-                  <SideNavLink renderIcon={ChartBubblePacked16} href="#">
-                    My NFTs
-                  </SideNavLink>
-                  <SideNavLink renderIcon={HeatMap16} href="#">
-                    Creator Dashboard
-                  </SideNavLink>
+                  <Link href="/create" passHref>
+                    <SideNavLink renderIcon={ColorPalette16}>Create</SideNavLink>
+                  </Link>
+                  <Link href="/" passHref>
+                    <SideNavLink renderIcon={ShoppingCatalog16}>Browse</SideNavLink>
+                  </Link>
+                  <Link href="/" passHref>
+                    <SideNavLink renderIcon={ChartBubblePacked16}>My NFTs</SideNavLink>
+                  </Link>
+                  <Link href="/" passHref>
+                    <SideNavLink renderIcon={HeatMap16}>Creator Dashboard</SideNavLink>
+                  </Link>
                 </SideNavItems>
               </SideNav>
             </Header>

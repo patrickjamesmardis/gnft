@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { Button } from 'carbon-components-react';
 
 export default function Home() {
   return (
