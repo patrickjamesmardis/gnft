@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
@@ -30,6 +31,7 @@ const Wallet = function ({ children }) {
   const [isMinting, setIsMinting] = useState(false);
   const [gnftContract, setGnftContract] = useState(null);
   const [mintStatus, setMintStatus] = useState('Mint Sketch');
+  const router = useRouter();
 
   useEffect(async () => {
     const connectAccounts = async () => {
@@ -112,7 +114,7 @@ const Wallet = function ({ children }) {
         const receipt = await tx.wait();
         const tokenId = receipt.events[0].args[2].toNumber();
         setMintStatus(`Successfully minted GNFT token #${tokenId}`);
-        window.location.replace(`/token/${tokenId}`);
+        router.push(`/token/${tokenId}`);
       } catch (error) {
         console.log(error);
         setMintStatus('Error minting token.');
