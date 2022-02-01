@@ -1,0 +1,55 @@
+.ace_gutter {
+  z-index: auto !important;
+}
+
+@media (max-width: 1023px) {
+  .editorContainer #braceEditor {
+    width: calc(100vw - 48px);
+  }
+
+  .sketchContainer canvas {
+    max-width: calc(100vw - 48px);
+    max-height: calc(100vw - 48px);
+  }
+
+  .controlsContainer .gradientBG,
+  .controlsContainer .gradientBG-2 {
+    max-width: calc(100vw - 48px);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .ace-github .ace_gutter {
+    background: $stone-800 !important;
+  }
+
+  .ace-github {
+    background: $stone-800 !important;
+    color: $stone-100 !important;
+  }
+
+  .ace-github .ace_cursor {
+    color: $stone-200 !important;
+  }
+
+  .ace-github .ace_marker-layer .ace_active-line {
+    background: $stone-700 !important;
+  }
+
+  .ace-github .ace_gutter-active-line {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+  }
+
+  .ace-github .ace_invisible {
+    color: red !important;
+  }
+
+  .ace-github .ace_print-margin {
+    background: $stone-700 !important;
+  }
+
+  .ace-github .ace_indent-guide {
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAVSURBVHgBAQoA9f8AREA8/wIAAAAADBYBwuMtBDcAAAAASUVORK5CYII=')
+      right repeat-y !important;
+  }
+}

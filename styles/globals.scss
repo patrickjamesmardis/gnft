@@ -6,12 +6,15 @@
 @tailwind components;
 @tailwind utilities;
 
-$text-01: #fafafa;
-$ui-01: #171717;
-$ui-02: #262626;
-$ui-03: #44403c;
+$stone-900: #1c1917;
+$stone-800: #292524;
+$stone-700: #44403c;
+$stone-200: #e7e5e4;
+$stone-100: #f5f5f4;
+$stone-50: #fafaf9;
 
 @import '../components/shell.scss';
+@import '../components/editor.scss';
 
 .text-gradient span {
   background-color: #e79e8f;
@@ -51,25 +54,5 @@ $ui-03: #44403c;
 
   &:hover {
     background-position: 100% 100%;
-  }
-}
-
-.ace_gutter {
-  z-index: auto !important;
-}
-
-@media (max-width: 1023px) {
-  .editorContainer #braceEditor {
-    width: calc(100vw - 48px);
-  }
-
-  .sketchContainer canvas {
-    max-width: calc(100vw - 48px);
-    max-height: calc(100vw - 48px);
-  }
-
-  .controlsContainer .gradientBG,
-  .controlsContainer .gradientBG-2 {
-    max-width: calc(100vw - 48px);
   }
 }

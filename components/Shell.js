@@ -11,12 +11,18 @@ import {
   SkipToContent,
 } from 'carbon-components-react';
 import { ChartBubblePacked16, ColorPalette16, HeatMap16, ShoppingCatalog16 } from '@carbon/icons-react';
-import { forwardRef, useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import Link from 'next/link';
 import { WalletContext } from '../context/Wallet';
 
 export default function Shell({ children }) {
   const { connect, currentAccount, prettyAddress, walletError } = useContext(WalletContext);
+  useEffect(() => {
+    document.querySelector('body').classList.add('bg-stone-50');
+    document.querySelector('body').classList.add('text-stone-900');
+    document.querySelector('body').classList.add('dark:bg-stone-900');
+    document.querySelector('body').classList.add('datk:text-stone-50');
+  }, []);
   return (
     <>
       <HeaderContainer
@@ -52,7 +58,7 @@ export default function Shell({ children }) {
                 isRail
                 expanded={isSideNavExpanded}
                 onOverlayClick={onClickSideNavExpand}
-                className="side-nav ui-03"
+                className="dark:bg-stone-700"
               >
                 <SideNavItems>
                   <Link href="/create" passHref>

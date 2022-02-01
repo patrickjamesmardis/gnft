@@ -6,38 +6,11 @@ a.bx--header__name {
   }
 }
 
-.bx--side-nav__navigation {
-  background-color: $ui-03;
-}
-
 .bx--side-nav__link {
   cursor: pointer;
-  svg {
-    fill: $text-01;
-  }
-  .bx--side-nav__link-text {
-    color: $text-01 !important;
-  }
 
-  &:hover {
-    svg {
-      fill: $ui-01;
-    }
-
-    .bx--side-nav__link-text {
-      color: $ui-01 !important;
-    }
-  }
   &:focus {
     outline-color: #ffffff00 !important;
-
-    svg {
-      fill: $ui-01;
-    }
-
-    .bx--side-nav__link-text {
-      color: $ui-01 !important;
-    }
   }
 }
 
@@ -80,5 +53,36 @@ a.bx--header__name {
 @media (min-width: 0) {
   .bx--header__nav {
     display: block;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .bx--side-nav__link {
+    svg {
+      fill: $stone-50;
+    }
+    .bx--side-nav__link-text {
+      color: $stone-50 !important;
+    }
+
+    &:hover {
+      svg {
+        fill: $stone-900;
+      }
+
+      .bx--side-nav__link-text {
+        color: $stone-900 !important;
+      }
+    }
+
+    &:focus {
+      svg {
+        fill: $stone-900;
+      }
+
+      .bx--side-nav__link-text {
+        color: $stone-900 !important;
+      }
+    }
   }
 }

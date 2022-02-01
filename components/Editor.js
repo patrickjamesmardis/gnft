@@ -31,7 +31,7 @@ export default function Editor() {
           GNFT Sketch
         </span>
       </h1>
-      <p className="pl-4 pb-2">
+      <p className="pl-4 pb-2 text-stone-900 dark:text-stone-50">
         <span contentEditable="true" onBlur={handleDescriptionChange}>
           created at g-nft.app
         </span>
