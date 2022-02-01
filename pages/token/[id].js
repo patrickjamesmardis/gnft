@@ -48,7 +48,7 @@ export default function Token() {
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-wrap pt-4" style={{ width: 'calc(100vw - 48px)' }}>
+      <div className="flex flex-wrap pt-4 text-stone-900 dark:text-stone-50" style={{ width: 'calc(100vw - 48px)' }}>
         <div className="px-4">
           <h2 className="text-2xl text-gradient">
             <span>{tokenData ? tokenData.name : 'Token Data Loading'}</span>
@@ -67,7 +67,7 @@ export default function Token() {
             </>
           )}
         </div>
-        <div className="max-w-full px-4">
+        <div className="max-w-full px-4 text-stone-900 dark:text-stone-50">
           {tokenData && (
             <>
               <h3 className="text-2xl">Source Code</h3>
