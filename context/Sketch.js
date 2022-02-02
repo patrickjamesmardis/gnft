@@ -64,7 +64,6 @@ const Sketch = ({ children }) => {
 
   useEffect(() => {
     if (imageUrl) {
-      console.log(imageUrl);
       const name = sketchTitle || 'GNFT Sketch';
       const description = sketchDescription || 'created at g-nft.app';
       addMetadata(JSON.stringify({ name, description, image: imageUrl, sourceCode: draw, artist: currentAccount }));

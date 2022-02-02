@@ -19,7 +19,7 @@ module.exports = {
     polygon: {
       url: `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_ID}`,
       chainId: 137,
-      acconts: { mnemonic, count: 1 },
+      accounts: { mnemonic, count: 1 },
     },
   },
   etherscan: {

@@ -52,7 +52,20 @@ $stone-50: #fafaf9;
   border: none;
   transition: background-position 0.75s;
 
+  &.loading {
+    animation: mintLoading 2s infinite alternate ease-in-out;
+  }
+
   &:hover {
     background-position: 100% 100%;
+  }
+}
+
+@keyframes mintLoading {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 50% 50%;
   }
 }

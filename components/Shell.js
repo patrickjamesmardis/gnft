@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { WalletContext } from '../context/Wallet';
 
 export default function Shell({ children }) {
-  const { connect, currentAccount, prettyAddress, walletError } = useContext(WalletContext);
+  const { connect, currentAccount, prettyAddress, walletError, wrongNetwork } = useContext(WalletContext);
   useEffect(() => {
     document.querySelector('body').classList.add('bg-stone-50');
     document.querySelector('body').classList.add('text-stone-900');
@@ -47,7 +47,7 @@ export default function Shell({ children }) {
                   }}
                 >
                   {walletError?.chainId
-                    ? 'Please connect your wallet to the Polygon Mumbai Testnet'
+                    ? wrongNetwork
                     : currentAccount
                     ? `Connected to ${prettyAddress(currentAccount)}`
                     : 'Connect wallet'}

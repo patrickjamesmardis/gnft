@@ -27,12 +27,12 @@ export default function Editor() {
   return (
     <>
       <h1 className="text-2xl pl-4 text-gradient">
-        <span contentEditable="true" onBlur={handleTitleChange}>
+        <span contentEditable="true" onBlur={handleTitleChange} suppressContentEditableWarning={true}>
           GNFT Sketch
         </span>
       </h1>
       <p className="pl-4 pb-2 text-stone-900 dark:text-stone-50">
-        <span contentEditable="true" onBlur={handleDescriptionChange}>
+        <span contentEditable="true" onBlur={handleDescriptionChange} suppressContentEditableWarning={true}>
           created at g-nft.app
         </span>
       </p>
