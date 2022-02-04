@@ -79,7 +79,7 @@ export default function Shell({ children }) {
           </>
         )}
       />
-      <main className="m-12">{children}</main>
+      <main className="my-12 ml-12">{children}</main>
     </>
   );
 }

@@ -26,7 +26,6 @@ const chainHex = `0x${deployedChainId.toString(16)}`;
 const mumbaiRpc = `https://polygon-mumbai.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_ID}`;
 const polygonRpc = `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_ID}`;
 
-const network = deployedChainId === 137 ? 'polygon' : 'mumbai';
 const rpc = deployedChainId === 137 ? polygonRpc : mumbaiRpc;
 const wrongNetwork =
   deployedChainId === 137
@@ -42,7 +41,7 @@ const Wallet = function ({ children }) {
   const [ipfsUrl, setIpfsUrl] = useState(null);
   const [isMinting, setIsMinting] = useState(false);
   const [gnftContract, setGnftContract] = useState(null);
-  const [mintStatus, setMintStatus] = useState('Mint Sketch');
+  const [mintStatus, setMintStatus] = useState('Connect your wallet to mint your sketch.');
   const router = useRouter();
 
   useEffect(async () => {
@@ -65,8 +64,12 @@ const Wallet = function ({ children }) {
     connectAccounts();
   }, [provider]);
 
+  const accountsConnected = (a) => {
+    setCurrentAccount(a);
+    setMintStatus('Mint sketch');
+  };
   useEffect(() => {
-    accounts.length > 0 ? setCurrentAccount(accounts[0]) : setCurrentAccount(null);
+    accounts.length > 0 ? accountsConnected(accounts[0]) : setCurrentAccount(null);
   }, [accounts]);
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 import Sketch from '../context/Sketch';
 import P5Sketch from '../components/P5Sketch';
-import SketchControls from '../components/SketchControls';
+import MintStatus from '../components/MintStatus';
 
 const Editor = dynamic(import('../components/Editor'), { ssr: false });
 
@@ -17,16 +17,15 @@ export default function Create() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Sketch>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 pt-4">
-          <div className="h-96 lg:h-full editorContainer" style={{ marginBottom: '80px' }}>
+        <div className="flex flex-wrap pt-4">
+          <div id="mintStatus" style={{ width: 'calc(100vw - 48px)' }}>
+            <MintStatus />
+          </div>
+          <div className="editorContainer">
             <Editor />
           </div>
-          <div className="sketchContainer">
+          <div className="sketchContainer pt-3 lg:pt-0 lg:pl-3">
             <P5Sketch />
-          </div>
-          <div></div>
-          <div className="controlsContainer">
-            <SketchControls />
           </div>
         </div>
       </Sketch>
