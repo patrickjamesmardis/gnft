@@ -139,13 +139,13 @@ const Wallet = function ({ children }) {
         setIpfsUrl(null);
         setTimeout(() => {
           setIsMinting(false);
-          setMintStatus('Mint Sketch');
+          setMintStatus('Mint sketch');
         }, 5000);
       }
       setIpfsUrl(null);
       setTimeout(() => {
         setIsMinting(false);
-        setMintStatus('Mint Sketch');
+        setMintStatus('Mint sketch');
       }, 5000);
     }
   };

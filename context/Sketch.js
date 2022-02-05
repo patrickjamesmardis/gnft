@@ -1,17 +1,47 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { parse } from '@babel/parser';
 import { WalletContext } from './Wallet';
+import shortHash from 'shorthash2';
 
 export const SketchContext = createContext();
 
 const rn = (max) => (Math.floor(Math.random() * max) + 1).toString();
-const defaultDraw = `const color_speed = ${rn(30)};\nconst rotate_speed = ${rn(
-  40
-)};\np5.colorMode(p5.HSB, 100);\np5.stroke(p5.frameCount / color_speed % 100, 100, 100, 60);\np5.noFill();\np5.translate(p5.width / 2, p5.height / 2);\np5.rotate(p5.radians(p5.frameCount * rotate_speed));\np5.rect(${rn(
-  150
-)}, ${rn(150)}, ${rn(150)}, ${rn(150)});\np5.triangle(${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(
-  150
-)});\np5.circle(${rn(150)}, ${rn(150)}, ${rn(150)});`;
+
+const createId = (idx) => {
+  return shortHash(`braceEditor-${idx}-${Date.now()}`);
+};
+
+const defaultBlocks = [
+  {
+    code: `const color_speed = ${rn(30)};\nconst rotate_speed = ${rn(
+      40
+    )};\np5.colorMode(p5.HSB, 100);\np5.stroke(p5.frameCount / color_speed % 100, 100, 100, 60);\np5.noFill();\np5.translate(p5.width / 2, p5.height / 2);\np5.rotate(p5.radians(p5.frameCount * rotate_speed));\n`,
+    id: createId(0),
+  },
+  {
+    code: `const rectX = ${rn(150)};\nconst rectY = ${rn(150)};\nconst rectW = ${rn(150)};\nconst rectH = ${rn(
+      150
+    )};\np5.rect(rectX, rectY, rectW, rectH);\n`,
+    id: createId(1),
+  },
+  {
+    code: `const triX1 = ${rn(150)};\nconst triY1 = ${rn(150)};\nconst triX2 = ${rn(150)};\nconst triY2 = ${rn(
+      150
+    )};\nconst triX3 = ${rn(150)};\nconst triY3 = ${rn(
+      150
+    )};\np5.triangle(triX1, triY1, triX2, triY2, triX3, triY3);\n`,
+    id: createId(2),
+  },
+  {
+    code: `const circleX = ${rn(150)};\nconst circleY = ${rn(150)};\nconst circleD = ${rn(
+      150
+    )};\np5.circle(circleX, circleY, circleD);\n`,
+    id: createId(3),
+  },
+];
+
+const defaultDraw = defaultBlocks.reduce((partial, current) => `${partial}\n${current.code}`, '');
+
 const drawFunc = new Function('p5', defaultDraw);
 
 const Sketch = ({ children }) => {
@@ -23,10 +53,14 @@ const Sketch = ({ children }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [sketchTitle, setSketchTitle] = useState(null);
   const [sketchDescription, setSketchDescription] = useState(null);
+  const [editorBlocks, setEditorBlocks] = useState(defaultBlocks);
+  const [addedBlocks, setAddedBlocks] = useState(0);
   const { client, setIsMinting, currentAccount, setIpfsUrl, setMintStatus } = useContext(WalletContext);
 
   useEffect(() => {
-    window.drawFunc = drawFunc;
+    if (!window.drawFunc) {
+      window.drawFunc = drawFunc;
+    }
   }, []);
 
   useEffect(() => {
@@ -129,6 +163,12 @@ const Sketch = ({ children }) => {
     saveSketch,
     setSketchTitle,
     setSketchDescription,
+    editorBlocks,
+    setEditorBlocks,
+    createId,
+    rn,
+    addedBlocks,
+    setAddedBlocks,
   };
 
   return <SketchContext.Provider value={context}>{children}</SketchContext.Provider>;

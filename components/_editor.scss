@@ -2,19 +2,52 @@
   z-index: auto !important;
 }
 
-.editorContainer #braceEditor {
-  width: calc(100vw - 48px - 512px);
-  height: 436px;
+.controlsGrid,
+.editorContainer {
+  width: calc(100vw - 560px);
+}
+.editor {
+  width: calc(100vw - 608px);
+}
+
+.ace-github .ace_marker-layer .ace_active-line {
+  background: #fff !important;
+}
+
+.add-closed {
+  transform: rotate(0deg);
+  transition: transform 0.5s ease-in-out;
+}
+
+.add-open {
+  transform: rotate(45deg);
+  transform-origin: center center;
+  transition: transform 0.5s ease-in-out;
+}
+
+.editorButton {
+  background-color: $stone-50;
+  transition: background-color 0.3s ease-in-out;
+  &:hover {
+    background-color: $stone-200;
+  }
 }
 
 @media (max-width: 1023px) {
-  .editorContainer #braceEditor {
+  .controlsGrid,
+  .editorContainer {
     width: calc(100vw - 48px);
   }
 
-  .sketchContainer canvas {
-    max-width: calc(100vw - 48px);
-    max-height: calc(100vw - 48px);
+  .editor {
+    width: calc(100vw - 48px);
+  }
+
+  .sketchContainer {
+    canvas {
+      max-width: calc(100vw - 48px);
+      max-height: calc(100vw - 48px);
+    }
   }
 }
 
@@ -33,7 +66,7 @@
   }
 
   .ace-github .ace_marker-layer .ace_active-line {
-    background: $stone-700 !important;
+    background: $stone-800 !important;
   }
 
   .ace-github .ace_gutter-active-line {
@@ -51,5 +84,13 @@
   .ace-github .ace_indent-guide {
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAVSURBVHgBAQoA9f8AREA8/wIAAAAADBYBwuMtBDcAAAAASUVORK5CYII=')
       right repeat-y !important;
+  }
+
+  .editorButton {
+    background-color: $stone-900;
+    transition: background-color 0.3s ease-in-out;
+    &:hover {
+      background-color: $stone-800;
+    }
   }
 }

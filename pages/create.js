@@ -1,13 +1,17 @@
+import { useContext } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
 import Sketch from '../context/Sketch';
 import P5Sketch from '../components/P5Sketch';
-import MintStatus from '../components/MintStatus';
+import SketchControls from '../components/SketchControls';
+
+import { WalletContext } from '../context/Wallet';
 
 const Editor = dynamic(import('../components/Editor'), { ssr: false });
 
 export default function Create() {
+  const { mintStatus } = useContext(WalletContext);
   return (
     <>
       <Head>
@@ -17,14 +21,16 @@ export default function Create() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Sketch>
-        <div className="flex flex-wrap pt-4">
-          <div id="mintStatus" style={{ width: 'calc(100vw - 48px)' }}>
-            <MintStatus />
-          </div>
-          <div className="editorContainer">
+        <div className="flex flex-wrap bg-stone-50 dark:bg-stone-900">
+          <SketchControls />
+          <div
+            className={`editorContainer order-2 lg:order-1 mt-6 lg:mt-16 ${
+              mintStatus === 'Mint sketch' ? 'lg:pt-4' : 'lg:pt-10'
+            }`}
+          >
             <Editor />
           </div>
-          <div className="sketchContainer pt-3 lg:pt-0 lg:pl-3">
+          <div className={`sketchContainer lg:pt-4 lg:pl-3 order-1 lg:order-2`}>
             <P5Sketch />
           </div>
         </div>

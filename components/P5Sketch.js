@@ -29,5 +29,5 @@ export default function P5Sketch() {
     };
   }, []);
 
-  return <div id="sketch"></div>;
+  return <div id="sketch" className="lg:fixed"></div>;
 }
