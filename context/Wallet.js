@@ -43,6 +43,7 @@ const Wallet = function ({ children }) {
   const [isMinting, setIsMinting] = useState(false);
   const [gnftContract, setGnftContract] = useState(null);
   const [mintStatus, setMintStatus] = useState('Mint Sketch');
+  const [mintModalOpen, setMintModalOpen] = useState(true);
   const router = useRouter();
 
   useEffect(async () => {
@@ -60,6 +61,8 @@ const Wallet = function ({ children }) {
 
         const { chainId } = await provider.getNetwork();
         chainId !== deployedChainId && chainId !== chainHex ? setWalletError({ chainId }) : setWalletError(null);
+      } else {
+        setAccounts([]);
       }
     };
     connectAccounts();
@@ -123,11 +126,12 @@ const Wallet = function ({ children }) {
       setMintStatus('Approve the transaction in your wallet.');
       try {
         const tx = await gnftContract.connect(provider.getSigner()).mintToken(ipfsUrl);
-        setMintStatus('Waiting on transaction confirmation.');
+        setMintStatus('Waiting on network confirmation.');
         const receipt = await tx.wait();
         const tokenId = receipt.events[0].args[2].toNumber();
         setMintStatus(`Successfully minted GNFT token #${tokenId}.`);
         setTimeout(() => {
+          setMintModalOpen(false);
           router.push(`/token/${tokenId}`);
         }, [2000]);
       } catch (error) {
@@ -136,12 +140,14 @@ const Wallet = function ({ children }) {
         setIpfsUrl(null);
         setTimeout(() => {
           setIsMinting(false);
+          setMintModalOpen(false);
           setMintStatus('Mint Sketch');
         }, 5000);
       }
       setIpfsUrl(null);
       setTimeout(() => {
         setIsMinting(false);
+        setMintModalOpen(false);
         setMintStatus('Mint Sketch');
       }, 5000);
     }
@@ -166,6 +172,8 @@ const Wallet = function ({ children }) {
     connectDefaultProvider,
     gnftAddress,
     wrongNetwork,
+    mintModalOpen,
+    setMintModalOpen,
   };
 
   return <WalletContext.Provider value={context}>{children}</WalletContext.Provider>;

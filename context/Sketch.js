@@ -5,14 +5,7 @@ import { WalletContext } from './Wallet';
 export const SketchContext = createContext();
 
 const rn = (max) => (Math.floor(Math.random() * max) + 1).toString();
-const defaultDraw = `const color_speed = ${rn(30)};\nconst rotate_speed = ${rn(
-  40
-)};\np5.colorMode(p5.HSB, 100);\np5.stroke(p5.frameCount / color_speed % 100, 100, 100, 60);\np5.noFill();\np5.translate(p5.width / 2, p5.height / 2);\np5.rotate(p5.radians(p5.frameCount * rotate_speed));\np5.rect(${rn(
-  150
-)}, ${rn(150)}, ${rn(150)}, ${rn(150)});\np5.triangle(${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(
-  150
-)});\np5.circle(${rn(150)}, ${rn(150)}, ${rn(150)});`;
-const drawFunc = new Function('p5', defaultDraw);
+const defaultDraw = `function setup() {\n\tp5.background(0);\n\tp5.fill(255);\n}\n\nfunction draw() {\n\tconst color_speed = ${rn(30)};\n\tconst rotate_speed = ${rn(40)};\n\tp5.colorMode(p5.HSB, 100);\n\tp5.stroke(p5.frameCount / color_speed % 100, 100, 100, 60);\n\tp5.noFill();\n\tp5.translate(p5.width / 2, p5.height / 2);\n\tp5.rotate(p5.radians(p5.frameCount * rotate_speed));\n\tp5.rect(${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)});\n\tp5.triangle(${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)});\n\tp5.circle(${rn(150)}, ${rn(150)}, ${rn(150)});\n}`;
 
 const Sketch = ({ children }) => {
   const [p5Instance, setP5Instance] = useState(null);
@@ -21,12 +14,32 @@ const Sketch = ({ children }) => {
   const [sketchPaused, setSketchPaused] = useState(false);
   const [pauseFrameCount, setPauseFrameCount] = useState(0);
   const [imageUrl, setImageUrl] = useState(null);
-  const [sketchTitle, setSketchTitle] = useState(null);
-  const [sketchDescription, setSketchDescription] = useState(null);
-  const { client, setIsMinting, currentAccount, setIpfsUrl, setMintStatus } = useContext(WalletContext);
+  const [sketchTitle, setSketchTitle] = useState('GNFT Sketch');
+  const [sketchDescription, setSketchDescription] = useState('created at g-nft.app');
+  const [localImage, setLocalImage] = useState(null);
+  const { client, setIsMinting, currentAccount, setIpfsUrl, setMintStatus, mintModalOpen, setMintModalOpen } = useContext(WalletContext);
+
+  const parseCode = code => {
+    const ast = parse(code, { errorRecovery: true });
+    console.log(ast.program.body[0].start);
+    const setupBodyNode = ast.program.body[0].body.body;
+    const drawBodyNode = ast.program.body[1].body.body;
+
+    console.log(setupBodyNode);
+
+    const getBody = (nodes) => code.split('\n').slice(nodes[0].loc.start.line - 1, nodes[nodes.length - 1].loc.end.line).join('\n').trim();
+
+    const setupBody = getBody(setupBodyNode);
+    const drawBody = getBody(drawBodyNode);
+
+    console.log(setupBody, drawBody);
+    return { setupFunction: setupBody, drawFunction: drawBody }
+  }
 
   useEffect(() => {
-    window.drawFunc = drawFunc;
+    const { setupFunction, drawFunction } = parseCode(defaultDraw);
+    window.setupFunc = new Function('p5', setupFunction);
+    window.drawFunc = new Function('p5', drawFunction);
   }, []);
 
   useEffect(() => {
@@ -36,11 +49,13 @@ const Sketch = ({ children }) => {
     }
 
     try {
-      parse(draw, { errorRecovery: true });
-      window.drawFunc = new Function('p5', draw);
+      const { setupFunction, drawFunction } = parseCode(draw);
+
+      window.setupFunc = new Function('p5', setupFunction);
+      window.drawFunc = new Function('p5', drawFunction);
     } catch (error) {
       setSketchError(error);
-      window.drawFunc = () => {};
+      window.drawFunc = () => { };
     }
   }, [draw]);
 
@@ -48,7 +63,7 @@ const Sketch = ({ children }) => {
     if (p5Instance) {
       if (sketchPaused) {
         setPauseFrameCount(p5Instance.frameCount);
-        p5Instance.draw = () => {};
+        p5Instance.draw = () => { };
       } else {
         p5Instance.frameCount = pauseFrameCount;
         p5Instance.draw = () => {
@@ -71,6 +86,16 @@ const Sketch = ({ children }) => {
     }
   }, [imageUrl]);
 
+  useEffect(() => {
+    !sketchTitle && setSketchTitle('GNFT Sketch');
+  }, [sketchTitle]);
+
+  useEffect(() => {
+    !sketchDescription && setSketchDescription('created at g-nft.app');
+  }, [sketchDescription]);
+
+  useEffect(() => { console.log(sketchError) }, [sketchError]);
+
   const addMetadata = async (file) => {
     try {
       const size = Buffer.byteLength(file);
@@ -87,16 +112,36 @@ const Sketch = ({ children }) => {
       setTimeout(() => {
         setIsMinting(false);
         setMintStatus('Mint Sketch');
+        setMintModalOpen(false);
       }, 5000);
       console.log(error);
     }
   };
 
+  const getSketchBlob = () => {
+    if (p5Instance) {
+      if (localImage) {
+        URL.revokeObjectURL(localImage);
+      }
+
+      document.querySelector('canvas').toBlob(b => {
+        const url = URL.createObjectURL(b);
+        setLocalImage(url);
+      });
+    }
+  };
+
+  const openMintModal = () => {
+    setSketchPaused(true);
+    getSketchBlob();
+    setMintModalOpen(true);
+  }
+
   const saveSketch = async () => {
     if (p5Instance) {
       setMintStatus('Uploading image to IPFS.');
       setIsMinting(true);
-      document.querySelector('canvas').toBlob(async (b) => {
+      document.querySelector('canvas').toBlob(async b => {
         try {
           const { size } = b;
           setMintStatus(`Uploading image to IPFS. (0 / ${size} B)`);
@@ -112,6 +157,7 @@ const Sketch = ({ children }) => {
           setTimeout(() => {
             setIsMinting(false);
             setMintStatus('Mint Sketch');
+            setMintModalOpen(false);
           }, 5000);
           console.log(error);
         }
@@ -127,8 +173,12 @@ const Sketch = ({ children }) => {
     sketchPaused,
     setSketchPaused,
     saveSketch,
+    sketchTitle,
     setSketchTitle,
+    sketchDescription,
     setSketchDescription,
+    openMintModal,
+    localImage
   };
 
   return <SketchContext.Provider value={context}>{children}</SketchContext.Provider>;

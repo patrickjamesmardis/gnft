@@ -1,13 +1,16 @@
 import '../styles/globals.scss';
 import Wallet from '../context/Wallet';
-
+import Sketch from '../context/Sketch';
 import Shell from '../components/Shell';
+
 function MyApp({ Component, pageProps }) {
   return (
     <Wallet>
-      <Shell>
-        <Component {...pageProps} />
-      </Shell>
+      <Sketch>
+        <Shell>
+          <Component {...pageProps} />
+        </Shell>
+      </Sketch>
     </Wallet>
   );
 }

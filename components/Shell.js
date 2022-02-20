@@ -49,8 +49,8 @@ export default function Shell({ children }) {
                   {walletError?.chainId
                     ? wrongNetwork
                     : currentAccount
-                    ? `Connected to ${prettyAddress(currentAccount)}`
-                    : 'Connect wallet'}
+                      ? `Connected to ${prettyAddress(currentAccount)}`
+                      : 'Connect wallet'}
                 </HeaderMenuItem>
               </HeaderNavigation>
               <SideNav
@@ -79,7 +79,7 @@ export default function Shell({ children }) {
           </>
         )}
       />
-      <main className="m-12">{children}</main>
+      <main className="my-12 ml-12">{children}</main>
     </>
   );
 }

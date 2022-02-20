@@ -2,6 +2,11 @@
   z-index: auto !important;
 }
 
+.editorContainer #braceEditor {
+  width: calc(100vw - 48px - 512px);
+  height: 494px;
+}
+
 @media (max-width: 1023px) {
   .editorContainer #braceEditor {
     width: calc(100vw - 48px);
@@ -10,11 +15,6 @@
   .sketchContainer canvas {
     max-width: calc(100vw - 48px);
     max-height: calc(100vw - 48px);
-  }
-
-  .controlsContainer .gradientBG,
-  .controlsContainer .gradientBG-2 {
-    max-width: calc(100vw - 48px);
   }
 }
 
