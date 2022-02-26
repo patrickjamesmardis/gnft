@@ -67,8 +67,8 @@ export default function Shell({ children }) {
                   <Link href="/" passHref>
                     <SideNavLink renderIcon={ShoppingCatalog16}>Browse</SideNavLink>
                   </Link>
-                  <Link href="/" passHref>
-                    <SideNavLink renderIcon={ChartBubblePacked16}>My NFTs</SideNavLink>
+                  <Link href="/my-gnfts" passHref>
+                    <SideNavLink renderIcon={ChartBubblePacked16}>My GNFTs</SideNavLink>
                   </Link>
                   <Link href="/" passHref>
                     <SideNavLink renderIcon={HeatMap16}>Creator Dashboard</SideNavLink>

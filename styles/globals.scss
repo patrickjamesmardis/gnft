@@ -3,6 +3,8 @@
 @import 'carbon-components/scss/components/button/button';
 @import 'carbon-components/scss/components/modal/modal';
 @import 'carbon-components/scss/components/text-input/text-input';
+@import 'carbon-components/scss/components/pagination/pagination';
+@import 'carbon-components/scss/components/skeleton/skeleton';
 
 @tailwind base;
 @tailwind components;
@@ -80,6 +82,22 @@ $stone-50: #fafaf9;
   }
 }
 
+.bx--pagination {
+  .bx--select-input {
+    background-color: $stone-50;
+  }
+
+  .bx--select-input, .bx--pagination__button {
+      &:focus{
+        box-shadow: none;
+      }
+  }
+}
+
+.web3modal-modal-lightbox {
+  z-index: 999999999 !important;
+}
+
 @keyframes mintLoading {
   from {
     background-position: 0% 0%;
@@ -87,4 +105,44 @@ $stone-50: #fafaf9;
   to {
     background-position: 50% 50%;
   }
+}
+
+@media (prefers-color-scheme: dark) {
+  .bx--pagination {
+    border-color: $stone-700;
+
+    .bx--select-input {
+      background-color: $stone-900;
+      color: $stone-50
+    }
+
+    .bx--select-input, .bx--pagination__button {
+      border-color: $stone-700 !important;
+
+      &.bx--btn--disabled {
+        &:hover {
+          background: $stone-900;
+        }
+      }
+
+      &:not(.bx--btn--disabled) {
+        svg path {
+          fill: $stone-200 !important;
+        }
+      }
+
+      &:hover {
+        background: $stone-700;
+      }
+    }
+
+    svg {
+      fill: $stone-200;
+    }
+
+    .bx--pagination__text {
+      color: $stone-200;
+    }
+  }
+
 }

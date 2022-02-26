@@ -18,7 +18,8 @@ export default function Token() {
     setErrorMessage(null);
     const contract = gnftContract || connectDefaultProvider();
     try {
-      const totalSupply = await contract.totalSupply();
+      let totalSupply = await contract.totalSupply();
+      totalSupply = totalSupply.toNumber();
       if (tokenId > totalSupply) {
         setRetryCount(retryCount + 1);
       } else {
@@ -26,19 +27,19 @@ export default function Token() {
         setTokenURI(uri);
       }
     } catch (error) {
-      setErrorMessage(`Couldn't connect to ${tokenId}`);
+      setErrorMessage(`Couldn't connect to token ${tokenId}`);
     }
   };
 
   useEffect(() => {
     if (id) {
-      fetchURI(id);
+      fetchURI(parseInt(id));
     }
   }, [id]);
 
   useEffect(() => {
-    if (id && retryCount < 8) {
-      setTimeout(() => fetchURI(id), 1000);
+    if (id && retryCount < 10) {
+      setTimeout(() => fetchURI(parseInt(id)), 1000);
     } else if (retryCount !== 0) {
       setErrorMessage(`Token ${id} does not exist`);
     }

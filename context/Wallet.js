@@ -43,7 +43,7 @@ const Wallet = function ({ children }) {
   const [isMinting, setIsMinting] = useState(false);
   const [gnftContract, setGnftContract] = useState(null);
   const [mintStatus, setMintStatus] = useState('Mint Sketch');
-  const [mintModalOpen, setMintModalOpen] = useState(true);
+  const [mintModalOpen, setMintModalOpen] = useState(false);
   const router = useRouter();
 
   useEffect(async () => {
