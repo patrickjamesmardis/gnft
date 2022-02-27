@@ -6,9 +6,10 @@ import { WalletContext } from '../../context/Wallet';
 import axios from 'axios';
 
 export default function Token() {
-  const { gnftContract, connectDefaultProvider, prettyAddress, gnftAddress } = useContext(WalletContext);
+  const { gnftContract, connectDefaultProvider, prettyAddress, gnftAddress, currentAccount, network } = useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState(null);
   const [tokenData, setTokenData] = useState(null);
+  const [owner, setOwner] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
@@ -24,6 +25,8 @@ export default function Token() {
         setRetryCount(retryCount + 1);
       } else {
         const uri = await contract.tokenURI(tokenId);
+        const _owner = await contract.ownerOf(tokenId);
+        setOwner(_owner);
         setTokenURI(uri);
       }
     } catch (error) {
@@ -69,7 +72,8 @@ export default function Token() {
           </h2>
           {tokenData && (
             <>
-              <p className="pt-2">Artist: {prettyAddress(tokenData.artist)}</p>
+              <p className="pt-2 text-xs">Artist: {currentAccount && currentAccount === tokenData.artist ? <span className="text-base text-gradient"><span>you</span></span> : prettyAddress(tokenData.artist)}</p>
+              <p className="pt-1 pb-2 text-xs">Owner: {currentAccount && currentAccount === owner ? <span className="text-base text-gradient"><span>you</span></span> : prettyAddress(owner)}</p>
               <Image
                 className="pt-2"
                 src={tokenData.image}
@@ -91,7 +95,7 @@ export default function Token() {
               <h3 className="text-2xl pt-4 pb-2">Token Contract</h3>
               <a
                 className="underline overflow-scroll"
-                href={`https://mumbai.polygonscan.com/address/${gnftAddress}`}
+                href={network === 'polygon' ? `https://polygonscan.com/address/${gnftAddress}` : `https://mumbai.polygonscan.com/address/${gnftAddress}`}
                 target="_blank"
                 rel="noreferrer"
               >

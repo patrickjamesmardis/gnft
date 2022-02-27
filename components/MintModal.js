@@ -12,14 +12,13 @@ export default function MintModal() {
     const handleDescriptionChange = e => setSketchDescription(e.target.value);
     return <ComposedModal
         open={mintModalOpen}
-        onRequestClose={() => { setMintModalOpen(false) }}
     >
         <ModalHeader label={`Contract ${prettyAddress(gnftAddress)}`} >
             <h1>Mint your GNFT</h1>
         </ModalHeader>
         <ModalBody>
             <p style={{ marginBottom: '1rem' }}>
-                Review the details below to confirm the metadata associated with your GNFT. If you would like to save a different frame, select cancel, then pause your sketch at the desired frame.
+                Review the details below to confirm the metadata associated with your GNFT. If you would like to save a different frame, close this modal, then pause your sketch at the desired frame.
             </p>
             <TextInput
                 data-modal-primary-focus
@@ -41,7 +40,7 @@ export default function MintModal() {
             {localImage && <Image src={localImage} width={500} height={500} className="mintModalImage" />}
         </ModalBody>
         <ModalFooter>
-            <Button kind="secondary" onClick={() => { setMintModalOpen(false) }}>Cancel</Button>
+            <Button kind="secondary" onClick={() => { setMintModalOpen(false) }}>Close</Button>
             <Button kind="primary" onClick={saveSketch} disabled={isMinting || walletError?.chandId} className={`gradientBG ${isMinting || walletError?.chainId ? 'opacity-50' : 'opacity-100'} ${isMinting && 'loading'}`}>{mintStatus}</Button>
         </ModalFooter>
     </ComposedModal>

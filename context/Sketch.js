@@ -21,18 +21,11 @@ const Sketch = ({ children }) => {
 
   const parseCode = code => {
     const ast = parse(code, { errorRecovery: true });
-    console.log(ast.program.body[0].start);
     const setupBodyNode = ast.program.body[0].body.body;
     const drawBodyNode = ast.program.body[1].body.body;
-
-    console.log(setupBodyNode);
-
     const getBody = (nodes) => code.split('\n').slice(nodes[0].loc.start.line - 1, nodes[nodes.length - 1].loc.end.line).join('\n').trim();
-
     const setupBody = getBody(setupBodyNode);
     const drawBody = getBody(drawBodyNode);
-
-    console.log(setupBody, drawBody);
     return { setupFunction: setupBody, drawFunction: drawBody }
   }
 

@@ -70,7 +70,7 @@ export default function Shell({ children }) {
                   <Link href="/my-gnfts" passHref>
                     <SideNavLink renderIcon={ChartBubblePacked16}>My GNFTs</SideNavLink>
                   </Link>
-                  <Link href="/" passHref>
+                  <Link href="/dashboard" passHref>
                     <SideNavLink renderIcon={HeatMap16}>Creator Dashboard</SideNavLink>
                   </Link>
                 </SideNavItems>

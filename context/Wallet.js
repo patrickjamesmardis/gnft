@@ -154,7 +154,7 @@ const Wallet = function ({ children }) {
   };
 
   const prettyAddress = (address) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return address.match(/^0x[a-fA-F0-9]{40}$/) ? `${address.slice(0, 6)}...${address.slice(-4)}` : address;
   };
 
   const context = {
@@ -174,6 +174,7 @@ const Wallet = function ({ children }) {
     wrongNetwork,
     mintModalOpen,
     setMintModalOpen,
+    network
   };
 
   return <WalletContext.Provider value={context}>{children}</WalletContext.Provider>;

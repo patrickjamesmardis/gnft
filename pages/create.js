@@ -27,7 +27,7 @@ export default function Create() {
           </div>
         </div>
       </div>
-      {<MintModal />}
+      <MintModal />
     </>
   );
 }
