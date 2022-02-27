@@ -7,7 +7,7 @@ import WalletLink from 'walletlink';
 import { create as ipftHttpClient } from 'ipfs-http-client';
 
 import GNFT from '../artifacts/contracts/GNFT.sol/GNFT.json';
-import { mumbaiAddress, polygonAddress } from './config';
+import { mumbaiTokenAddress, polygonTokenAddress } from './config';
 
 export const WalletContext = createContext();
 
@@ -32,7 +32,7 @@ const wrongNetwork =
   deployedChainId === 137
     ? 'Please connect your wallet to the Polygon Mainnet'
     : 'Please connect your wallet to the Mumbai Testnet';
-const gnftAddress = deployedChainId === 137 ? polygonAddress : mumbaiAddress;
+const gnftAddress = deployedChainId === 137 ? polygonTokenAddress : mumbaiTokenAddress;
 
 const Wallet = function ({ children }) {
   const [provider, setProvider] = useState(null);

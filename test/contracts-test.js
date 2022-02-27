@@ -310,6 +310,93 @@ describe('GNFT + GNFTMarket', () => {
     });
   });
 
+  describe('GNFTMarket.getTotalUnsoldItems()', () => {
+    it('Should return the correct number of unsold items', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+
+      let totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(0);
+
+      await market.connect(addr1).listItem(gnftAddress, 1, sellPrice);
+      totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(1);
+
+      await market.connect(addr1).listItem(gnftAddress, 2, sellPrice);
+      totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(2);
+
+      await market.connect(addr1).listItem(gnftAddress, 3, sellPrice);
+      totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(3);
+
+      await market.connect(addr2).purchaseItem(1, { value: sellPrice });
+      totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(2);
+
+      await market.connect(addr2).purchaseItem(2, { value: sellPrice });
+      totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(1);
+
+      await market.connect(addr1).cancelSell(3);
+      totalUnsold = await market.getTotalUnsoldItems();
+      expect(totalUnsold.toNumber()).to.equal(0);
+    });
+  });
+
+  describe('GNFTMarket.getUnsoldItemByIndex()', () => {
+    it('Should get the correct items', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+
+      await market.connect(addr1).listItem(gnftAddress, 1, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 2, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 3, sellPrice);
+
+      let item = await market.getUnsoldItemByIndex(0);
+      expect(item.toNumber()).to.equal(1);
+      item = await market.getUnsoldItemByIndex(1);
+      expect(item.toNumber()).to.equal(2);
+      item = await market.getUnsoldItemByIndex(2);
+      expect(item.toNumber()).to.equal(3);
+
+      await market.connect(addr2).purchaseItem(1, { value: sellPrice });
+      item = await market.getUnsoldItemByIndex(0);
+      expect(item.toNumber()).to.equal(3);
+      item = await market.getUnsoldItemByIndex(1);
+      expect(item.toNumber()).to.equal(2);
+
+      await market.connect(addr1).cancelSell(3);
+      item = await market.getUnsoldItemByIndex(0);
+      expect(item.toNumber()).to.equal(2);
+    });
+
+    it('Should not get an out of bounds item', async () => {
+      await expect(market.getUnsoldItemByIndex(0)).to.be.reverted;
+    });
+  });
+
+  describe('GNFTMarket.cancelSell()', () => {
+    it('Should not cancel the sell of an item that does not exist', async () => {
+      await expect(market.connect(addr1).cancelSell(1)).to.be.reverted;
+    });
+
+    it('Should not allow a non-seller to cancel a sell', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await market.connect(addr1).listItem(gnftAddress, 1, sellPrice);
+      await expect(market.connect(addr2).cancelSell(1)).to.be.reverted;
+    });
+
+    it('Should not cancel an item that is sold', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await market.connect(addr1).listItem(gnftAddress, 1, sellPrice);
+      await market.connect(addr2).purchaseItem(1, { value: sellPrice });
+      await expect(market.connect(addr1).cancelSell(1)).to.be.reverted;
+    });
+  });
+
   describe('GNFTMarket.getGNFTItem()', () => {
     it('Should get the most recent sale', async () => {
       await gnft.connect(addr1).mintToken(tokenUri1);
