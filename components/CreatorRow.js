@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { SkeletonPlaceholder } from 'carbon-components-react';
 
 import { WalletContext } from '../context/Wallet';
 
@@ -9,6 +10,7 @@ export default function CreatorRow({ contract, creator, idx }) {
     const [tokenId, setTokenId] = useState(0);
     const [tokenURI, setTokenURI] = useState(null);
     const [imageURI, setImageURI] = useState(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
     const [metadata, setMetadata] = useState(null);
     const [owner, setOwner] = useState(null);
     const { prettyAddress, marketAddress } = useContext(WalletContext);
@@ -40,7 +42,12 @@ export default function CreatorRow({ contract, creator, idx }) {
         <div className="flex">
             <div>
                 <h2 className="text-xl mb-2">GNFT #{tokenId}</h2>
-                {imageURI && <Link href={`/token/${tokenId}`}><a><Image src={imageURI} width={250} height={250} /></a></Link>}
+                {!imageLoaded && <SkeletonPlaceholder style={{ width: '250px', height: '250px' }} />}
+                {imageURI && <Link href={`/token/${tokenId}`}>
+                    <a>
+                        <Image src={imageURI} width={250} height={250} className={`${imageLoaded && 'hidden'}`} onLoadingComplete={() => { setImageLoaded(true) }} />
+                    </a>
+                </Link>}
             </div>
             <div className="ml-4 mt-7">
                 <h3 className="text-xl">{metadata?.name}</h3>
