@@ -11,7 +11,7 @@ export default function CreatorRow({ contract, creator, idx }) {
     const [imageURI, setImageURI] = useState(null);
     const [metadata, setMetadata] = useState(null);
     const [owner, setOwner] = useState(null);
-    const { prettyAddress } = useContext(WalletContext);
+    const { prettyAddress, marketAddress } = useContext(WalletContext);
 
     const getTokenURI = async () => {
         const id = await contract.getCreatedTokenByIndex(creator, idx);
@@ -45,7 +45,7 @@ export default function CreatorRow({ contract, creator, idx }) {
             <div className="ml-4 mt-7">
                 <h3 className="text-xl">{metadata?.name}</h3>
                 <p>{metadata?.description}</p>
-                <p className="text-xs">Owned by: {owner && (owner === creator ? <span className="text-base text-gradient"><span>you</span></span> : prettyAddress(owner))}</p>
+                <p className="text-xs">Owned by: {owner && (owner === creator ? <span className="text-base text-gradient"><span>you</span></span> : owner === marketAddress ? <span className="text-base">GNFT Market</span> : <span className="text-base">{prettyAddress(owner)}</span>)}</p>
             </div>
         </div>
     </div>;

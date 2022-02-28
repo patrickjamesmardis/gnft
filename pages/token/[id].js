@@ -3,21 +3,28 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { WalletContext } from '../../context/Wallet';
+import ListItemModal from '../../components/ListItemModal';
+import CancelModal from '../../components/CancelModal';
+import PurchaseModal from '../../components/PurchaseModal';
 import axios from 'axios';
+import { ethers } from 'ethers';
 
 export default function Token() {
-  const { gnftContract, connectDefaultProvider, prettyAddress, gnftAddress, currentAccount, network } = useContext(WalletContext);
+  const { gnftContract, connectDefaultProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, marketContract, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [seller, setSeller] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [itemId, setItemId] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
   const fetchURI = async (tokenId) => {
     setErrorMessage(null);
-    const contract = gnftContract || connectDefaultProvider();
+    const contract = gnftContract || connectDefaultProvider().defaultTokenContract;
     try {
       let totalSupply = await contract.totalSupply();
       totalSupply = totalSupply.toNumber();
@@ -34,11 +41,25 @@ export default function Token() {
     }
   };
 
+  const fetchMarketItem = async (tokenId) => {
+    const contract = marketContract || connectDefaultProvider().marketContract;
+    const item = await contract.getGNFTItem(tokenId);
+    setSeller(item.seller);
+    setPrice(item.price);
+    setItemId(item.itemId);
+  }
+
   useEffect(() => {
     if (id) {
       fetchURI(parseInt(id));
     }
-  }, [id]);
+  }, [id, currentAccount]);
+
+  useEffect(() => {
+    if (!listItemModalOpen && !cancelModalOpen && !purchaseModalOpen && id) {
+      fetchURI(parseInt(id));
+    }
+  }, [listItemModalOpen, cancelModalOpen, purchaseModalOpen])
 
   useEffect(() => {
     if (id && retryCount < 10) {
@@ -57,6 +78,16 @@ export default function Token() {
     fetchData();
   }, [tokenURI]);
 
+  useEffect(() => {
+    if (owner === marketAddress) {
+      fetchMarketItem(parseInt(id));
+    } else {
+      setSeller(null);
+      setPrice(null);
+      setItemId(null);
+    }
+  }, [owner]);
+
   return (
     <>
       <Head>
@@ -72,16 +103,45 @@ export default function Token() {
           </h2>
           {tokenData && (
             <>
-              <p className="pt-2 text-xs">Artist: {currentAccount && currentAccount === tokenData.artist ? <span className="text-base text-gradient"><span>you</span></span> : prettyAddress(tokenData.artist)}</p>
-              <p className="pt-1 pb-2 text-xs">Owner: {currentAccount && currentAccount === owner ? <span className="text-base text-gradient"><span>you</span></span> : prettyAddress(owner)}</p>
-              <Image
-                className="pt-2"
-                src={tokenData.image}
-                alt={`${tokenData.name}: ${tokenData.description}`}
-                width={500}
-                height={500}
-              />
-              <p className="pt-2 mb-4">{tokenData.description}</p>
+              <p className="pt-2">{tokenData.description}</p>
+              <p className="pt-2 text-xs">Artist: {currentAccount && currentAccount === tokenData.artist ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(tokenData.artist)}</span>}</p>
+              <p className="text-xs">Owner: {currentAccount && currentAccount === owner ? <span className="text-base text-gradient"><span>you</span></span> : marketAddress === owner ? <span className="text-base">GNFT Market</span> : <span className="text-base">{prettyAddress(owner)}</span>}</p>
+              {seller && <p className="text-xs">Seller: {seller === currentAccount ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(seller)}</span>}</p>}
+              {(currentAccount && owner) && currentAccount === owner && <div id="ownerActions" className="pt-4">
+                <button
+                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                  onClick={() => { setListItemModalOpen(true) }}
+                >
+                  Sell GNFT
+                </button>
+              </div>}
+              {currentAccount && owner === marketAddress && currentAccount === seller && <div id="cancelActions" className="pt-4">
+                <button
+                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                  onClick={() => { setCancelModalOpen(true) }}
+                >
+                  Cancel Sell
+                </button>
+              </div>}
+              {currentAccount && owner === marketAddress && currentAccount !== seller && <div id="purchaseActions" className="pt-4 flex items-center">
+                {price && <h1 className="mr-4 text-gradient text-xl"><span>{ethers.utils.formatEther(price)} MATIC</span></h1>}
+                <button
+                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                  onClick={() => { setPurchaseModalOpen(true) }}
+                >
+                  Purchase
+                </button>
+              </div>}
+
+              <div className="mt-4">
+                <Image
+                  className="pt-2"
+                  src={tokenData.image}
+                  alt={`${tokenData.name}: ${tokenData.description}`}
+                  width={500}
+                  height={500}
+                />
+              </div>
             </>
           )}
         </div>
@@ -89,7 +149,7 @@ export default function Token() {
           {tokenData && (
             <>
               <h3 className="text-2xl">Source Code</h3>
-              <pre className="pt-2" style={{ overflowX: 'scroll' }}>
+              <pre className="pt-2 text-stone-500 dark:text-stone-400" style={{ overflowX: 'scroll' }}>
                 <code>{tokenData.sourceCode}</code>
               </pre>
               <h3 className="text-2xl pt-4 pb-2">Token Contract</h3>
@@ -106,6 +166,9 @@ export default function Token() {
           )}
         </div>
       </div>
+      <ListItemModal modalOpen={listItemModalOpen} setModalOpen={setListItemModalOpen} tokenId={id} />
+      {itemId && <CancelModal itemId={itemId} />}
+      {itemId && <PurchaseModal itemId={itemId} price={price} />}
     </>
   );
 }

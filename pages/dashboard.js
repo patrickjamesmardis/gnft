@@ -9,27 +9,7 @@ export default function Dashboard() {
     const [balance, setBalance] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(24);
-    const [rows, setRows] = useState([]);
     const { currentAccount, prettyAddress, gnftContract, connect } = useContext(WalletContext);
-
-    const headers = [
-        {
-            key: 'tokenId',
-            header: 'Token ID'
-        },
-        {
-            key: 'image',
-            header: 'Image'
-        },
-        {
-            key: 'name',
-            header: 'Name'
-        },
-        {
-            key: 'owner',
-            header: 'Owner'
-        }
-    ]
 
     const getCreatedTokens = async () => {
         const b = await gnftContract.getCreatedBalanceOf(currentAccount);
@@ -49,14 +29,6 @@ export default function Dashboard() {
             getCreatedTokens();
         }
     }, [currentAccount]);
-
-    useEffect(() => {
-        if (balance === 0) {
-            setRows([])
-        } else {
-            setRows(Array(balance).fill(1))
-        }
-    }, [balance]);
 
     const handlePaginationChange = e => {
         setPage(e.page)

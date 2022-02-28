@@ -10,9 +10,7 @@ export default function MintModal() {
 
     const handleTitleChange = e => setSketchTitle(e.target.value);
     const handleDescriptionChange = e => setSketchDescription(e.target.value);
-    return <ComposedModal
-        open={mintModalOpen}
-    >
+    return <ComposedModal open={mintModalOpen} onClose={() => { setMintModalOpen(false) }}>
         <ModalHeader label={`Contract ${prettyAddress(gnftAddress)}`} >
             <h1>Mint your GNFT</h1>
         </ModalHeader>

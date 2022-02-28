@@ -3,6 +3,7 @@
 @import 'carbon-components/scss/components/button/button';
 @import 'carbon-components/scss/components/modal/modal';
 @import 'carbon-components/scss/components/text-input/text-input';
+@import 'carbon-components/scss/components/number-input/number-input';
 @import 'carbon-components/scss/components/pagination/pagination';
 @import 'carbon-components/scss/components/skeleton/skeleton';
 
@@ -96,6 +97,10 @@ $stone-50: #fafaf9;
 
 .web3modal-modal-lightbox {
   z-index: 999999999 !important;
+}
+
+.bx--number input[type=number] {
+  background-color: #f4f4f4 !important;
 }
 
 @keyframes mintLoading {
