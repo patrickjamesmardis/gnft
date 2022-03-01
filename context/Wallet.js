@@ -344,7 +344,8 @@ const Wallet = function ({ children }) {
     purchaseModalOpen,
     setPurchaseModalOpen,
     purchaseStatus,
-    purchaseItem
+    purchaseItem,
+    isPurchasing
   };
 
   return <WalletContext.Provider value={context}>{children}</WalletContext.Provider>;

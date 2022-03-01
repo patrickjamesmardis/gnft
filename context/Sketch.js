@@ -1,11 +1,36 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { parse } from '@babel/parser';
 import { WalletContext } from './Wallet';
+import shortHash from 'shorthash2';
 
 export const SketchContext = createContext();
 
 const rn = (max) => (Math.floor(Math.random() * max) + 1).toString();
-const defaultDraw = `function setup() {\n\tp5.background(0);\n\tp5.fill(255);\n}\n\nfunction draw() {\n\tconst color_speed = ${rn(30)};\n\tconst rotate_speed = ${rn(40)};\n\tp5.colorMode(p5.HSB, 100);\n\tp5.stroke(p5.frameCount / color_speed % 100, 100, 100, 60);\n\tp5.noFill();\n\tp5.translate(p5.width / 2, p5.height / 2);\n\tp5.rotate(p5.radians(p5.frameCount * rotate_speed));\n\tp5.rect(${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)});\n\tp5.triangle(${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)}, ${rn(150)});\n\tp5.circle(${rn(150)}, ${rn(150)}, ${rn(150)});\n}`;
+const createId = (idx) => {
+  return shortHash(`braceEditor-${idx}-${Date.now()}`);
+};
+
+const defaultBlocks = [
+  {
+    code: `const color_speed = ${rn(30)};\nconst rotate_speed = ${rn(40)};\np5.colorMode(p5.HSB, 100);\np5.stroke(p5.frameCount / color_speed % 100, 100, 100, 60);\np5.noFill();\np5.translate(p5.width / 2, p5.height / 2);\np5.rotate(p5.radians(p5.frameCount * rotate_speed));\n`,
+    id: createId(0),
+  },
+  {
+    code: `const rectX = ${rn(150)};\nconst rectY = ${rn(150)};\nconst rectW = ${rn(150)};\nconst rectH = ${rn(150)};\np5.rect(rectX, rectY, rectW, rectH);\n`,
+    id: createId(1),
+  },
+  {
+    code: `const triX1 = ${rn(150)};\nconst triY1 = ${rn(150)};\nconst triX2 = ${rn(150)};\nconst triY2 = ${rn(150)};\nconst triX3 = ${rn(150)};\nconst triY3 = ${rn(150)};\np5.triangle(triX1, triY1, triX2, triY2, triX3, triY3);\n`,
+    id: createId(2),
+  },
+  {
+    code: `const circleX = ${rn(150)};\nconst circleY = ${rn(150)};\nconst circleD = ${rn(150)};\np5.circle(circleX, circleY, circleD);\n`,
+    id: createId(3),
+  },
+];
+
+const defaultDraw = defaultBlocks.reduce((partial, current) => `${partial}\n${current.code}`, '');
+const drawFunc = new Function('p5', defaultDraw);
 
 const Sketch = ({ children }) => {
   const [p5Instance, setP5Instance] = useState(null);
@@ -17,22 +42,14 @@ const Sketch = ({ children }) => {
   const [sketchTitle, setSketchTitle] = useState('GNFT Sketch');
   const [sketchDescription, setSketchDescription] = useState('created at g-nft.app');
   const [localImage, setLocalImage] = useState(null);
-  const { client, setIsMinting, currentAccount, setIpfsUrl, setMintStatus, mintModalOpen, setMintModalOpen } = useContext(WalletContext);
-
-  const parseCode = code => {
-    const ast = parse(code, { errorRecovery: true });
-    const setupBodyNode = ast.program.body[0].body.body;
-    const drawBodyNode = ast.program.body[1].body.body;
-    const getBody = (nodes) => code.split('\n').slice(nodes[0].loc.start.line - 1, nodes[nodes.length - 1].loc.end.line).join('\n').trim();
-    const setupBody = getBody(setupBodyNode);
-    const drawBody = getBody(drawBodyNode);
-    return { setupFunction: setupBody, drawFunction: drawBody }
-  }
+  const [editorBlocks, setEditorBlocks] = useState(defaultBlocks);
+  const [addedBlocks, setAddedBlocks] = useState(0);
+  const { client, setIsMinting, currentAccount, setIpfsUrl, setMintStatus, setMintModalOpen } = useContext(WalletContext);
 
   useEffect(() => {
-    const { setupFunction, drawFunction } = parseCode(defaultDraw);
-    window.setupFunc = new Function('p5', setupFunction);
-    window.drawFunc = new Function('p5', drawFunction);
+    if (!window.drawFunc) {
+      window.drawFunc = drawFunc;
+    }
   }, []);
 
   useEffect(() => {
@@ -40,12 +57,9 @@ const Sketch = ({ children }) => {
       p5Instance.frameCount = 0;
       p5Instance.background(0);
     }
-
     try {
-      const { setupFunction, drawFunction } = parseCode(draw);
-
-      window.setupFunc = new Function('p5', setupFunction);
-      window.drawFunc = new Function('p5', drawFunction);
+      parse(draw, { errorRecovery: true });
+      window.drawFunc = new Function('p5', draw);
     } catch (error) {
       setSketchError(error);
       window.drawFunc = () => { };
@@ -74,7 +88,7 @@ const Sketch = ({ children }) => {
     if (imageUrl) {
       const name = sketchTitle || 'GNFT Sketch';
       const description = sketchDescription || 'created at g-nft.app';
-      addMetadata(JSON.stringify({ name, description, image: imageUrl, sourceCode: draw, artist: currentAccount }));
+      addMetadata(JSON.stringify({ name, description, image: imageUrl, sourceCode: draw.trim(), artist: currentAccount }));
       setImageUrl(null);
     }
   }, [imageUrl]);
@@ -171,7 +185,13 @@ const Sketch = ({ children }) => {
     sketchDescription,
     setSketchDescription,
     openMintModal,
-    localImage
+    localImage,
+    editorBlocks,
+    setEditorBlocks,
+    createId,
+    rn,
+    addedBlocks,
+    setAddedBlocks
   };
 
   return <SketchContext.Provider value={context}>{children}</SketchContext.Provider>;

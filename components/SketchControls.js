@@ -11,13 +11,13 @@ export default function SketchControls() {
   return (
     <>
       <button
-        className="gradientBG-2 py-4 px-6 mt-2 text-stone-50 text-left"
+        className="gradientBG-2 py-4 px-6 mt-4 text-stone-50 text-left"
         onClick={toggleSketchPaused}
       >
         {sketchPaused ? <Play16 /> : <Pause16 />}
       </button>
       <button
-        className={`gradientBG py-3 px-6 mt-2 text-stone-50 text-left grow ml-2 ${isMinting || !currentAccount || walletError?.chainId ? 'opacity-50' : 'opacity-100'} ${isMinting && 'loading'}`}
+        className={`gradientBG py-3 px-6 mt-4 text-stone-50 text-left grow ml-2 ${isMinting || !currentAccount || walletError?.chainId ? 'opacity-50' : 'opacity-100'} ${isMinting && 'loading'}`}
         onClick={!currentAccount ? connect : openMintModal}
         disabled={isMinting || walletError?.chainId}
       >

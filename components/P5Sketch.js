@@ -11,12 +11,8 @@ export default function P5Sketch() {
       p5.setup = () => {
         const c = p5.createCanvas(500, 500);
         c.parent('sketch');
-        try {
-          window.setupFunc(p5);
-        } catch (error) {
-          setSketchError(error);
-          window.setupFunc = () => { };
-        }
+        p5.background(0);
+        p5.fill(255);
       };
       p5.draw = () => {
         try {

@@ -148,11 +148,7 @@ export default function Token() {
         <div className="max-w-full px-4 text-stone-900 dark:text-stone-50">
           {tokenData && (
             <>
-              <h3 className="text-2xl">Source Code</h3>
-              <pre className="pt-2 text-stone-500 dark:text-stone-400" style={{ overflowX: 'scroll' }}>
-                <code>{tokenData.sourceCode}</code>
-              </pre>
-              <h3 className="text-2xl pt-4 pb-2">Token Contract</h3>
+              <h3 className="text-2xl pb-2">Token Contract</h3>
               <a
                 className="underline overflow-scroll"
                 href={network === 'polygon' ? `https://polygonscan.com/address/${gnftAddress}` : `https://mumbai.polygonscan.com/address/${gnftAddress}`}
@@ -162,6 +158,10 @@ export default function Token() {
                 {prettyAddress(gnftAddress)}
               </a>
               <p>Token #{id}</p>
+              <h3 className="text-2xl pt-4">Source Code</h3>
+              <pre className="pt-2 text-stone-500 dark:text-stone-400" style={{ overflowX: 'scroll' }}>
+                <code>{tokenData.sourceCode}</code>
+              </pre>
             </>
           )}
         </div>
