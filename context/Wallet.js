@@ -8,7 +8,7 @@ import { create as ipftHttpClient } from 'ipfs-http-client';
 
 import GNFT from '../artifacts/contracts/GNFT.sol/GNFT.json';
 import GNFTMarket from '../artifacts/contracts/GNFTMarket.sol/GNFTMarket.json';
-import { mumbaiTokenAddress, polygonTokenAddress, mumbaiMarketAddress } from './config';
+import { mumbaiTokenAddress, polygonTokenAddress, mumbaiMarketAddress, polygonMarketAddress } from './config';
 
 export const WalletContext = createContext();
 
@@ -34,7 +34,7 @@ const wrongNetwork =
     ? 'Please connect your wallet to the Polygon Mainnet'
     : 'Please connect your wallet to the Mumbai Testnet';
 const gnftAddress = deployedChainId === 137 ? polygonTokenAddress : mumbaiTokenAddress;
-const marketAddress = mumbaiMarketAddress;
+const marketAddress = deployedChainId === 137 ? polygonMarketAddress : mumbaiMarketAddress;
 
 const Wallet = function ({ children }) {
   const [provider, setProvider] = useState(null);
