@@ -19,7 +19,7 @@ export default function CreatorRow({ contract, creator, idx }) {
         const id = await contract.getCreatedTokenByIndex(creator, idx);
         const uri = await contract.tokenURI(id);
         const _owner = await contract.ownerOf(id);
-        setOwner(_owner);
+        setOwner(_owner.toLowerCase());
         setTokenId(id.toNumber());
         setTokenURI(uri);
     }

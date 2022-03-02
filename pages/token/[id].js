@@ -10,7 +10,7 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 
 export default function Token() {
-  const { gnftContract, connectDefaultProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, marketContract, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
+  const { gnftContract, connect, connectDefaultProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, marketContract, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState(null);
@@ -33,7 +33,7 @@ export default function Token() {
       } else {
         const uri = await contract.tokenURI(tokenId);
         const _owner = await contract.ownerOf(tokenId);
-        setOwner(_owner);
+        setOwner(_owner.toLowerCase());
         setTokenURI(uri);
       }
     } catch (error) {
@@ -44,7 +44,7 @@ export default function Token() {
   const fetchMarketItem = async (tokenId) => {
     const contract = marketContract || connectDefaultProvider().marketContract;
     const item = await contract.getGNFTItem(tokenId);
-    setSeller(item.seller);
+    setSeller(item.seller.toLowerCase());
     setPrice(item.price);
     setItemId(item.itemId);
   }
@@ -104,10 +104,10 @@ export default function Token() {
           {tokenData && (
             <>
               <p className="pt-2">{tokenData.description}</p>
-              <p className="pt-2 text-xs">Artist: {currentAccount && currentAccount === tokenData.artist ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(tokenData.artist)}</span>}</p>
+              <p className="pt-2 text-xs">Artist: {currentAccount && tokenData && currentAccount === tokenData.artist.toLowerCase() ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(tokenData.artist)}</span>}</p>
               <p className="text-xs">Owner: {currentAccount && currentAccount === owner ? <span className="text-base text-gradient"><span>you</span></span> : marketAddress === owner ? <span className="text-base">GNFT Market</span> : <span className="text-base">{prettyAddress(owner)}</span>}</p>
-              {seller && <p className="text-xs">Seller: {seller === currentAccount ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(seller)}</span>}</p>}
-              {(currentAccount && owner) && currentAccount === owner && <div id="ownerActions" className="pt-4">
+              {seller && <p className="text-xs">Seller: {currentAccount && seller === currentAccount ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(seller)}</span>}</p>}
+              {currentAccount && owner && currentAccount === owner && <div id="ownerActions" className="pt-4">
                 <button
                   className={`gradientBG py-3 px-6 text-stone-50 text-left`}
                   onClick={() => { setListItemModalOpen(true) }}
@@ -115,7 +115,8 @@ export default function Token() {
                   Sell GNFT
                 </button>
               </div>}
-              {currentAccount && owner === marketAddress && currentAccount === seller && <div id="cancelActions" className="pt-4">
+              {currentAccount && owner === marketAddress && currentAccount === seller && <div id="cancelActions" className="pt-4 flex items-center">
+                {price && <h1 className="mr-4 text-gradient text-xl"><span>{ethers.utils.formatEther(price)} MATIC</span></h1>}
                 <button
                   className={`gradientBG py-3 px-6 text-stone-50 text-left`}
                   onClick={() => { setCancelModalOpen(true) }}
@@ -130,6 +131,15 @@ export default function Token() {
                   onClick={() => { setPurchaseModalOpen(true) }}
                 >
                   Purchase
+                </button>
+              </div>}
+              {!currentAccount && owner === marketAddress && <div id="noUserActions" className="pt-4 flex items-center">
+                {price && <h1 className="mr-4 text-gradient text-xl"><span>{ethers.utils.formatEther(price)} MATIC</span></h1>}
+                <button
+                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                  onClick={connect}
+                >
+                  Connect Wallet
                 </button>
               </div>}
 

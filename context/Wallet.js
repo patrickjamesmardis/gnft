@@ -33,8 +33,8 @@ const wrongNetwork =
   deployedChainId === 137
     ? 'Please connect your wallet to the Polygon Mainnet'
     : 'Please connect your wallet to the Mumbai Testnet';
-const gnftAddress = deployedChainId === 137 ? polygonTokenAddress : mumbaiTokenAddress;
-const marketAddress = deployedChainId === 137 ? polygonMarketAddress : mumbaiMarketAddress;
+const gnftAddress = deployedChainId === 137 ? polygonTokenAddress.toLowerCase() : mumbaiTokenAddress.toLowerCase();
+const marketAddress = deployedChainId === 137 ? polygonMarketAddress.toLowerCase() : mumbaiMarketAddress.toLowerCase();
 
 const Wallet = function ({ children }) {
   const [provider, setProvider] = useState(null);
@@ -90,7 +90,7 @@ const Wallet = function ({ children }) {
 
   useEffect(() => {
     if (accounts.length > 0) {
-      setCurrentAccount(accounts[0]);
+      setCurrentAccount(accounts[0].toLowerCase());
       getApproval(accounts[0]);
     } else {
       setCurrentAccount(null);
@@ -304,7 +304,7 @@ const Wallet = function ({ children }) {
   }
 
   const prettyAddress = (address) => {
-    return address.match(/^0x[a-fA-F0-9]{40}$/) ? `${address.slice(0, 6)}...${address.slice(-4)}` : address;
+    return address.match(/^0x[a-fA-F0-9]{40}$/) ? `${address.slice(0, 6)}...${address.slice(-4)}`.toLowerCase() : address;
   };
 
   const context = {
