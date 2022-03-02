@@ -30,9 +30,7 @@ export default function Create() {
           </div>
           <div className="sketchContainer lg:pl-3 order-1 lg:order-2 lg:fixed lg:right-0">
             <P5Sketch />
-            <div className="controlsContainer flex">
-              <SketchControls />
-            </div>
+            <SketchControls />
           </div>
         </div>
       </div>

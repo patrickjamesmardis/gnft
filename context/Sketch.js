@@ -60,6 +60,7 @@ const Sketch = ({ children }) => {
     try {
       parse(draw, { errorRecovery: true });
       window.drawFunc = new Function('p5', draw);
+      setSketchError(null);
     } catch (error) {
       setSketchError(error);
       window.drawFunc = () => { };
@@ -76,6 +77,7 @@ const Sketch = ({ children }) => {
         p5Instance.draw = () => {
           try {
             window.drawFunc(p5Instance);
+            setSketchError(null);
           } catch (error) {
             setSketchError(error);
           }
@@ -100,8 +102,6 @@ const Sketch = ({ children }) => {
   useEffect(() => {
     !sketchDescription && setSketchDescription('created at g-nft.app');
   }, [sketchDescription]);
-
-  useEffect(() => { console.log(sketchError) }, [sketchError]);
 
   const addMetadata = async (file) => {
     try {
@@ -175,6 +175,7 @@ const Sketch = ({ children }) => {
   const context = {
     setP5Instance,
     setDraw,
+    sketchError,
     setSketchError,
     defaultDraw,
     sketchPaused,

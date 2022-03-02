@@ -29,7 +29,7 @@ const readStatement = (env, statement) => {
 
 const processVariableDeclaration = (env, statement) => {
     const declaration = statement.declarations[0];
-    if (declaration.init.type === 'NumericLiteral' && statement.declarations.length === 1) {
+    if (declaration && statement.declarations.length === 1 && declaration.init?.type === 'NumericLiteral') {
         const line = statement.loc.start.line;
         const name = declaration.id.name;
         const value = declaration.init.extra.rawValue;
@@ -66,7 +66,7 @@ const processIfStatement = (env, statement) => {
 };
 
 export default function Block({ block }) {
-    const { editorBlocks, setEditorBlocks, setDraw, createId, rn, addedBlocks, setAddedBlocks } = useContext(SketchContext);
+    const { editorBlocks, setEditorBlocks, setDraw, createId, rn, addedBlocks, setAddedBlocks, setSketchError } = useContext(SketchContext);
     const [addOpen, setAddOpen] = useState(false);
     const [blockVars, setBlockVars] = useState({});
     const getCurrentIndex = () => editorBlocks.findIndex((b) => b.id === block.id);
@@ -111,12 +111,17 @@ export default function Block({ block }) {
     };
 
     const parseCode = (code, editor, id) => {
-        const ast = parse(code, { errorRecovery: true });
-        const bodyStatements = ast.program.body;
-        const finalAcc = bodyStatements.reduce(readStatement, { vars: {}, updatedText: code, charShift: 0, editorCharShift: 0, scopePath: [] });
-        const { updatedText, vars } = finalAcc;
-        setBlockVars(vars);
-        updateBlock(updatedText.trim(), editor, id);
+        try {
+            const ast = parse(code, { errorRecovery: true });
+            const bodyStatements = ast.program.body;
+            const finalAcc = bodyStatements.reduce(readStatement, { vars: {}, updatedText: code, charShift: 0, editorCharShift: 0, scopePath: [] });
+            const { updatedText, vars } = finalAcc;
+            setBlockVars(vars);
+            updateBlock(updatedText.trim(), editor, id);
+            setSketchError(null);
+        } catch (error) {
+            setSketchError(error);
+        }
     };
 
     const handleEditorChange = (editor, id) => {
@@ -287,7 +292,7 @@ export default function Block({ block }) {
                     step={1}
                     stepMultiplier={10}
                     onChange={e => { handleInputChange(key, e.value) }}
-                    novalidate
+                    noValidate
                 />
             ))}
         </div>}
