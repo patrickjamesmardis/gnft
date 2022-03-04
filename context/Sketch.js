@@ -7,7 +7,7 @@ export const SketchContext = createContext();
 
 const rn = (max) => (Math.floor(Math.random() * max) + 1).toString();
 const createId = (idx) => {
-  return shortHash(`braceEditor-${idx}-${Date.now()}`);
+  return `be-${shortHash(`braceEditor-${idx}-${Date.now()}`)}`;
 };
 
 const defaultBlocks = [

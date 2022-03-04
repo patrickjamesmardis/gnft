@@ -112,10 +112,10 @@ contract GNFTMarket is ReentrancyGuard {
         address artist = _items[itemId].artist;
 
         if (seller == artist) {
-            payable(seller).transfer((msg.value * 90) / 100);
+            payable(seller).transfer((msg.value * 98) / 100);
         } else {
             payable(artist).transfer((msg.value * 20) / 100);
-            payable(seller).transfer((msg.value * 70) / 100);
+            payable(seller).transfer((msg.value * 78) / 100);
         }
 
         IERC721(tokenContract).transferFrom(address(this), msg.sender, tokenId);

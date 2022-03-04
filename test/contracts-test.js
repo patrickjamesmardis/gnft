@@ -460,7 +460,7 @@ describe('GNFT + GNFTMarket', () => {
       expect(marketBalance.toNumber()).to.equal(0);
     });
 
-    it('Should transfer 90% of the sell price to the seller if the seller is the artist', async () => {
+    it('Should transfer 98% of the sell price to the seller if the seller is the artist', async () => {
       let artistStart = await addr1.getBalance();
       artistStart = ethers.utils.formatEther(artistStart);
 
@@ -475,8 +475,8 @@ describe('GNFT + GNFTMarket', () => {
 
       const sellPriceETH = ethers.utils.formatEther(sellPrice);
       expect(artistGain)
-        .to.be.above(sellPriceETH * 0.9 - 0.1)
-        .and.below(sellPriceETH * 0.9 + 0.00001);
+        .to.be.above(sellPriceETH * 0.98 - 0.1)
+        .and.below(sellPriceETH * 0.98 + 0.00001);
     });
 
     it('Should transfer the sell price (plus gas) from the buyer', async () => {
@@ -538,7 +538,7 @@ describe('GNFT + GNFTMarket', () => {
       let addr2Diff = ethers.utils.formatEther(addr2Mid) - ethers.utils.formatEther(addr2Start);
       let addr3Diff = ethers.utils.formatEther(addr3Mid) - ethers.utils.formatEther(addr3Start);
 
-      expect(addr1Diff).to.be.above(89.999).and.below(90.001);
+      expect(addr1Diff).to.be.above(97.999).and.below(98.001);
       expect(addr2Diff).to.be.above(-101.001).and.below(-99.999);
       expect(addr3Diff).to.equal(0);
 
@@ -555,7 +555,7 @@ describe('GNFT + GNFTMarket', () => {
       addr3Diff = ethers.utils.formatEther(addr3End) - ethers.utils.formatEther(addr3Mid);
 
       expect(addr1Diff).to.be.above(19.999).and.below(20.001);
-      expect(addr2Diff).to.be.above(69.999).and.below(70.001);
+      expect(addr2Diff).to.be.above(77.999).and.below(78.001);
       expect(addr3Diff).to.be.above(-101.001).and.below(-99.999);
     });
 
@@ -616,7 +616,7 @@ describe('GNFT + GNFTMarket', () => {
       const endBalance = await owner.getBalance();
       const diff = ethers.utils.formatEther(endBalance) - ethers.utils.formatEther(startBalance);
 
-      expect(diff).to.be.above(19.99).and.below(20.001);
+      expect(diff).to.be.above(3.99).and.below(4.001);
     });
 
     it('Should only let the owner cashout', async () => {

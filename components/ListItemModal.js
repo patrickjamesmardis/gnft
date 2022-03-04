@@ -32,7 +32,7 @@ export default function ListItemModal({ tokenId }) {
         </ModalHeader>
         <ModalBody>
             <p style={{ marginBottom: '1rem' }}>
-                {marketApproval ? 'Set the listing price of your GNFT. When your token is purchased, the artist will recieve a 20% royalty, and the market will receive a 10% listing fee.' : 'To list your items on the GNFT Market, you must first approve the market contract to transfer tokens on your behalf. Tokens will be transferred to the Market upon listing and to the receiving party upon purchase or cancellation.'}
+                {marketApproval ? 'Set the listing price of your GNFT. When your token is purchased, the artist will recieve a 20% royalty, and the market will receive a 2% listing fee.' : 'To list your items on the GNFT Market, you must first approve the market contract to transfer tokens on your behalf. Tokens will be transferred to the Market upon listing and to the receiving party upon purchase or cancellation.'}
             </p>
             {marketApproval && <NumberInput id="sell-price" label="Sell Price (MATIC)" defaultValue={10} step={1} value={sellPrice} onChange={handleInputChange} invalidText="Price must be at least 0.1 MATIC." invalid={!validSellPrice} />}
         </ModalBody>
