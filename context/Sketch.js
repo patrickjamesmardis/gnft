@@ -109,7 +109,7 @@ const Sketch = ({ children }) => {
       setMintStatus(`Uploading metadata to IFPS. (0 / ${size} B)`);
       const added = await client.add(file, {
         pin: true,
-        prograss: (prog) => setMintStatus(`Uploading metadata to IFPS. (${prog} / ${size} B)`),
+        progress: (prog) => setMintStatus(`Uploading metadata to IFPS. (${prog} / ${size} B)`),
       });
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
       setIpfsUrl(url);

@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
-import { create as ipftHttpClient } from 'ipfs-http-client';
+import { create as ipfsHttpClient } from 'ipfs-http-client';
 
 import GNFT from '../artifacts/contracts/GNFT.sol/GNFT.json';
 import GNFTMarket from '../artifacts/contracts/GNFTMarket.sol/GNFTMarket.json';
@@ -12,7 +12,7 @@ import { mumbaiTokenAddress, polygonTokenAddress, mumbaiMarketAddress, polygonMa
 
 export const WalletContext = createContext();
 
-const client = ipftHttpClient({
+const client = ipfsHttpClient({
   host: 'ipfs.infura.io',
   port: 5001,
   protocol: 'https',
