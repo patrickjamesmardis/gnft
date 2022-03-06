@@ -41,11 +41,13 @@ $stone-50: #fafaf9;
   background-image: url('../assets/tokens.png');
 }
 
-.comingSoonBanner {
-  width: calc(100vw - 48px);
-  height: calc(100vh - 48px);
+.tokensOverlay {
   background: #262626aa;
   backdrop-filter: blur(10px);
+}
+
+.fullWidth {
+  width: calc(100vw - 48px);
 }
 
 .gradientBG {

@@ -1,6 +1,41 @@
 import Head from 'next/head';
+import Link from 'next/link';
+import { useContext, useEffect, useState } from 'react';
+
+import { WalletContext } from '../context/Wallet';
+import TokenGrid from '../components/TokenGrid';
 
 export default function Home() {
+  const { rpcProvider, marketAddress } = useContext(WalletContext);
+  const [balance, setBalance] = useState(0);
+  const [tokens, setTokens] = useState([]);
+  const page = 1;
+  const pageSize = 6;
+
+  const getBalance = async () => {
+    const b = await rpcProvider.tokenContract.balanceOf(marketAddress);
+    setBalance(b.toNumber());
+  };
+
+  const getTokens = async () => {
+    if (balance > 0) {
+      const t = await rpcProvider.tokenContract.tokensOfOwnerByPage(marketAddress, pageSize, page);
+      setTokens(t);
+    }
+  };
+
+  useEffect(() => {
+    if (rpcProvider) {
+      getBalance();
+    }
+  }, [rpcProvider]);
+
+  useEffect(() => {
+    if (balance > 0) {
+      getTokens();
+    }
+  }, [balance]);
+
   return (
     <>
       <Head>
@@ -10,18 +45,22 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="fixed top-0 left-0 w-screen h-screen bg-stone-900 text-stone-50 tokensBG">
-        <div className="comingSoonBanner mt-12 ml-12 p-3 flex flex-col items-center justify-center">
-          <h1 className="text-3xl mb-3">GNFT</h1>
-          <p className="mb-3 text-center">A place to create, mint, and collect generative&nbsp;art&nbsp;NFTs.</p>
-          <a
-            href="https://gnft.notion.site/GNFT-Wallet-Setup-bd4bd90613394998b7c4cb3446af6f5f"
-            target="_blank"
-            rel="noreferrer"
-            className="gradientBG py-3 px-6 mt-2"
-          >
-            <p>Setup Guide</p>
-          </a>
+      <div className="text-stone-900 dark:text-stone-50 py-4">
+        <h1 className="text-3xl text-gradient px-4 pb-24"><span>Create, mint, and collect GNFTs</span></h1>
+        <div className="tokensBG">
+          <div className="tokensOverlay min-h-[500px] pt-4">
+
+            <h2 className="text-2xl px-4">What is GNFT?</h2>
+            <p className="max-w-3xl pt-4 px-4 text-lg">GNFT combines a P5.js playground and NFT marketplace to allow anyone to create, mint, and collect generative art NFTs. NFTs provide a decentralized ledger of transactions to validate authenticity and ownership. GNFTs use the InterPlanetary File System for decentralized file storage to ensure your content is secure and accessible.</p>
+            <div className="mt-6 ml-4">
+              <Link href="/create"><a className="gradientBG py-3 px-6 text-stone-50 text-left">Create GNFT</a></Link>
+              <Link href="/market"><a className="gradientBG-2 py-3 px-6 ml-2 text-stone-50 text-left">Browse GNFTs</a></Link>
+            </div>
+          </div>
+        </div>
+        <div className="p-4">
+          <h2 className={`text-2xl ${balance > 0 ? 'mb-4' : 'mb-0'}`}>Recent GNFTs</h2>
+          {balance > 0 ? <TokenGrid tokens={tokens} /> : <p>0 GNFTs available</p>}
         </div>
       </div>
     </>
