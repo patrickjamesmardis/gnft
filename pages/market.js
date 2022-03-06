@@ -55,8 +55,8 @@ export default function Market() {
         <div className="p-4 text-stone-900 dark:text-stone-50">
             <h1 className="text-2xl text-gradient"><span>GNFT Market</span></h1>
             <p className="text-gradient"><span>{`${balance}${balance === 1 ? ' item' : ' items'} available`}</span></p>
-            <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />
-            <TokenGrid tokens={tokens} />
+            {balance > 0 && <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />}
+            {balance > 0 && <TokenGrid tokens={tokens} />}
         </div>
     </>;
 }

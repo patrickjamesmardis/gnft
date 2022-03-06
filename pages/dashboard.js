@@ -65,10 +65,10 @@ export default function Dashboard() {
         </Head>
         <div className="p-4 text-stone-900 dark:text-stone-50">
             <h1 className="text-2xl text-gradient"><span>{currentAccount ? `Creator Dashboard` : `Connect your wallet to view your dashboard.`}</span></h1>
-            {currentAccount && <p className="text-gradient"><span>{prettyAddress(currentAccount)}</span></p>}
+            {currentAccount && <p className="text-gradient"><span>{prettyAddress(currentAccount)} | {`${balance}${balance === 1 ? ' GNFT' : ' GNFTs'} created`}</span></p>}
             {currentAccount && <>
-                <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />
-                <CreatorGrid creator={currentAccount} tokens={tokens} />
+                {balance > 0 && <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />}
+                {balance > 0 && <CreatorGrid creator={currentAccount} tokens={tokens} />}
             </>}
         </div>
     </>;

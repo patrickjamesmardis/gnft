@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import P5Sketch from '../components/P5Sketch';
 import SketchControls from '../components/SketchControls';
@@ -11,6 +11,13 @@ const Editor = dynamic(import('../components/Editor'), { ssr: false });
 
 export default function Create() {
   const { sketchTitle, sketchDescription } = useContext(SketchContext);
+  const [supportedBrowser, setSupportedBrowser] = useState(true);
+
+  useEffect(() => {
+    console.log(MediaRecorder.isTypeSupported('video/webm'));
+    setSupportedBrowser(MediaRecorder.isTypeSupported('video/webm'));
+  }, []);
+
   return (
     <>
       <Head>
@@ -21,10 +28,10 @@ export default function Create() {
       </Head>
       <div className="pb-4">
         <div className="px-4 pt-4 pb-4 text-stone-900 dark:text-stone-50">
-          <h1 className="text-2xl text-gradient"><span>{sketchTitle}</span></h1>
-          <p className="text-stone-900 dark:text-stone-50">{sketchDescription}</p>
+          <h1 className="text-2xl text-gradient"><span>{supportedBrowser ? sketchTitle : 'Unsupported Browser'}</span></h1>
+          {supportedBrowser && <p className="text-stone-900 dark:text-stone-50">{sketchDescription}</p>}
         </div>
-        <div className="flex flex-wrap">
+        {supportedBrowser && <div className="flex flex-wrap">
           <div className="editorContainer mt-4 lg:mt-0 order-2 lg:order-1">
             <Editor />
           </div>
@@ -32,9 +39,9 @@ export default function Create() {
             <P5Sketch />
             <SketchControls />
           </div>
-        </div>
+        </div>}
       </div>
-      <MintModal />
+      {supportedBrowser && <MintModal />}
     </>
   );
 }

@@ -10,7 +10,7 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 
 export default function Token() {
-  const { connect, rpcProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, marketContract, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
+  const { connect, rpcProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState(null);

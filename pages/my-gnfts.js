@@ -63,10 +63,10 @@ export default function MyGNFTs() {
             <link rel="icon" href="/favicon.ico" />
         </Head>
         <div className="p-4 text-stone-900 dark:text-stone-50">
-            <h1 className="text-2xl text-gradient"><span>{`${balance}${balance === 1 ? ' GNFT' : ' GNFTs'} collected`}</span></h1>
+            <h1 className="text-2xl text-gradient"><span>{currentAccount ? `${balance}${balance === 1 ? ' GNFT' : ' GNFTs'} collected` : 'Connect your wallet to view your GNFTs.'}</span></h1>
             {currentAccount && <p className="text-gradient"><span>{prettyAddress(currentAccount)}</span></p>}
-            <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />
-            <TokenGrid tokens={tokens} />
+            {balance > 0 && <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />}
+            {balance > 0 && <TokenGrid tokens={tokens} />}
         </div>
     </>
 }
