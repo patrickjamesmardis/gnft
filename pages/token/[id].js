@@ -10,7 +10,7 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 
 export default function Token() {
-  const { gnftContract, connect, connectDefaultProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, marketContract, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
+  const { connect, rpcProvider, prettyAddress, gnftAddress, currentAccount, network, listItemModalOpen, setListItemModalOpen, marketAddress, marketContract, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState(null);
@@ -24,7 +24,7 @@ export default function Token() {
 
   const fetchURI = async (tokenId) => {
     setErrorMessage(null);
-    const contract = gnftContract || connectDefaultProvider().defaultTokenContract;
+    const contract = rpcProvider.tokenContract;
     try {
       let totalSupply = await contract.totalSupply();
       totalSupply = totalSupply.toNumber();
@@ -42,7 +42,7 @@ export default function Token() {
   };
 
   const fetchMarketItem = async (tokenId) => {
-    const contract = marketContract || connectDefaultProvider().marketContract;
+    const contract = rpcProvider.marketContract;
     const item = await contract.getGNFTItem(tokenId);
     setSeller(item.seller.toLowerCase());
     setPrice(item.price);

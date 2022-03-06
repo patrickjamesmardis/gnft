@@ -9,26 +9,47 @@ export default function Dashboard() {
     const [balance, setBalance] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(24);
-    const { currentAccount, prettyAddress, gnftContract, connect } = useContext(WalletContext);
+    const [tokens, setTokens] = useState([]);
+    const { currentAccount, prettyAddress, rpcProvider, connect } = useContext(WalletContext);
 
-    const getCreatedTokens = async () => {
-        const b = await gnftContract.getCreatedBalanceOf(currentAccount);
+    const getBalance = async () => {
+        const b = await rpcProvider.tokenContract.createdBalanceOf(currentAccount);
         setBalance(b.toNumber());
-    }
+    };
+
+    const getTokens = async () => {
+        if (balance > 0) {
+            const t = await rpcProvider.tokenContract.tokensOfCreatorByPage(currentAccount, pageSize, page);
+            setTokens(t);
+        }
+    };
 
     useEffect(() => {
         if (!currentAccount) {
             connect();
         } else {
-            getCreatedTokens();
+            getBalance();
         }
     }, []);
 
     useEffect(() => {
+        if (balance > 0) {
+            getTokens();
+        }
+    }, [balance])
+
+    useEffect(() => {
         if (currentAccount) {
-            getCreatedTokens();
+            getTokens();
+        }
+    }, [page, pageSize]);
+
+    useEffect(() => {
+        if (currentAccount) {
+            getBalance();
         }
     }, [currentAccount]);
+
 
     const handlePaginationChange = e => {
         setPage(e.page)
@@ -47,7 +68,7 @@ export default function Dashboard() {
             {currentAccount && <p className="text-gradient"><span>{prettyAddress(currentAccount)}</span></p>}
             {currentAccount && <>
                 <Pagination className="my-4 bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-50" pageSizes={[6, 12, 24, 36]} totalItems={balance} size="lg" onChange={handlePaginationChange} pageSize={24} />
-                <CreatorGrid page={page} pageSize={pageSize} balance={balance} contract={gnftContract} creator={currentAccount} />
+                <CreatorGrid creator={currentAccount} tokens={tokens} />
             </>}
         </div>
     </>;

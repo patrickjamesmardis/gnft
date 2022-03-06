@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const axios = require('axios');
 
 describe('GNFT + GNFTMarket', () => {
   let market, gnft, owner, addr1, addr2, addr3, addr4, marketAddress, gnftAddress;
@@ -26,6 +27,24 @@ describe('GNFT + GNFTMarket', () => {
     await gnft.connect(addr4).setApprovalForAll(marketAddress, true);
   });
 
+  describe('GNFT.contractURI()', () => {
+    it('Should store the correct contract metadata adddress', async () => {
+      const contractURI = await gnft.contractURI();
+      expect(contractURI).to.equal("https://ipfs.infura.io/ipfs/QmY4aaVmPoAGSFL2WDSJ8X94CWhQeUrqeXUWy41HSno8sb");
+    });
+
+    it('Should store the correct metadata details', async () => {
+      const contractURI = await gnft.contractURI();
+      const { data } = await axios.get(contractURI);
+      expect(data.name).to.equal('GNFT');
+      expect(data.description).to.equal('GNFT is a place to create, mint, and collect generative art NFTs.');
+      expect(data.image).to.equal('https://ipfs.infura.io/ipfs/QmQV93iX51BVNhGAY9SxR9RSqUYqPqyfYRcfpVxbPA4UNM');
+      expect(data['external_link']).to.equal('https://g-nft.app');
+      expect(data['seller_fee_basis_points']).to.equal(100);
+      expect(data['fee_recipient']).to.equal('0x9118E5DcfBC185c92CA87d6f5C674De39b61895c');
+    });
+  });
+
   describe('GNFT.mintToken()', () => {
     it('Should mint a new token owned by the caller', async () => {
       await gnft.connect(addr1).mintToken(tokenUri1);
@@ -50,8 +69,8 @@ describe('GNFT + GNFTMarket', () => {
       await gnft.connect(addr1).mintToken(tokenUri1);
       await gnft.connect(addr2).mintToken(tokenUri2);
 
-      const artist1 = await gnft.getArtistOf(1);
-      const artist2 = await gnft.getArtistOf(2);
+      const artist1 = await gnft.creatorOf(1);
+      const artist2 = await gnft.creatorOf(2);
 
       expect(artist1).to.equal(addr1.address);
       expect(artist2).to.equal(addr2.address);
@@ -59,33 +78,33 @@ describe('GNFT + GNFTMarket', () => {
 
     it('Should store the correct created balance', async () => {
       await gnft.connect(addr1).mintToken(tokenUri1);
-      let balance = await gnft.getCreatedBalanceOf(addr1.address);
+      let balance = await gnft.createdBalanceOf(addr1.address);
       expect(balance.toNumber()).to.equal(1);
 
       await gnft.connect(addr1).mintToken(tokenUri1);
-      balance = await gnft.getCreatedBalanceOf(addr1.address);
+      balance = await gnft.createdBalanceOf(addr1.address);
       expect(balance.toNumber()).to.equal(2);
 
       await gnft.connect(addr1).mintToken(tokenUri1);
-      balance = await gnft.getCreatedBalanceOf(addr1.address);
+      balance = await gnft.createdBalanceOf(addr1.address);
       expect(balance.toNumber()).to.equal(3);
 
       await gnft.connect(addr2).mintToken(tokenUri1);
-      const balance2 = await gnft.getCreatedBalanceOf(addr2.address);
+      const balance2 = await gnft.createdBalanceOf(addr2.address);
       expect(balance.toNumber()).to.equal(3);
       expect(balance2.toNumber()).to.equal(1);
     });
   });
 
-  describe('GNFT.getCreatedTokenByIndex()', () => {
+  describe('GNFT.tokenOfCreatorByIndex()', () => {
     it('Should access the correct created token', async () => {
       await gnft.connect(addr1).mintToken(tokenUri1);
       await gnft.connect(addr1).mintToken(tokenUri2);
       await gnft.connect(addr1).mintToken(tokenUri1);
 
-      const token1 = await gnft.getCreatedTokenByIndex(addr1.address, 0);
-      const token2 = await gnft.getCreatedTokenByIndex(addr1.address, 1);
-      const token3 = await gnft.getCreatedTokenByIndex(addr1.address, 2);
+      const token1 = await gnft.tokenOfCreatorByIndex(addr1.address, 0);
+      const token2 = await gnft.tokenOfCreatorByIndex(addr1.address, 1);
+      const token3 = await gnft.tokenOfCreatorByIndex(addr1.address, 2);
 
       expect(token1.toNumber()).to.equal(1);
       expect(token2.toNumber()).to.equal(2);
@@ -93,7 +112,75 @@ describe('GNFT + GNFTMarket', () => {
     });
 
     it('Should not access uncreated tokens', async () => {
-      await expect(gnft.getCreatedTokenByIndex(addr1.address, 0)).to.be.reverted;
+      await expect(gnft.tokenOfCreatorByIndex(addr1.address, 0)).to.be.reverted;
+    });
+  });
+
+  describe('GNFT.tokenOfCreatorByPage', () => {
+    it('Should return the correct items', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri2);
+
+      const tokens1 = await gnft.tokensOfCreatorByPage(addr1.address, 6, 1);
+      const tokens2 = await gnft.tokensOfCreatorByPage(addr1.address, 6, 2);
+      expect(tokens1).to.be.an('array').that.has.lengthOf(6);
+      expect(tokens2).to.be.an('array').that.has.lengthOf(1);
+
+      for (let i = 0; i < 6; i++) {
+        expect(tokens1[i].id.toNumber()).to.equal(i + 1);
+        expect(tokens1[i].tokenURI).to.equal(tokenUri1);
+      }
+      expect(tokens2[0].id.toNumber()).to.equal(7);
+      expect(tokens2[0].tokenURI).to.equal(tokenUri2);
+    });
+
+    it('Should not get invalid pages/page sizes', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+
+      await expect(gnft.tokensOfCreatorByPage(addr1.address, 6, 0)).to.be.reverted;
+      await expect(gnft.tokensOfCreatorByPage(addr1.address, 6, 2)).to.be.reverted;
+
+      await expect(gnft.tokensOfCreatorByPage(addr1.address, 0, 1)).to.be.reverted;
+      await expect(gnft.tokensOfCreatorByPage(addr1.address, 101, 1)).to.be.reverted;
+    });
+  });
+
+  describe('GNFT.tokensOfOwnerByPage', () => {
+    it('Should return the correct items', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri2);
+
+      const tokens1 = await gnft.tokensOfOwnerByPage(addr1.address, 6, 1);
+      const tokens2 = await gnft.tokensOfOwnerByPage(addr1.address, 6, 2);
+      expect(tokens1).to.be.an('array').that.has.lengthOf(6);
+      expect(tokens2).to.be.an('array').that.has.lengthOf(1);
+
+      for (let i = 0; i < 6; i++) {
+        expect(tokens1[i].id.toNumber()).to.equal(i + 1);
+        expect(tokens1[i].tokenURI).to.equal(tokenUri1);
+      }
+      expect(tokens2[0].id.toNumber()).to.equal(7);
+      expect(tokens2[0].tokenURI).to.equal(tokenUri2);
+    });
+
+    it('Should not get invalid pages/page sizes', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+
+      await expect(gnft.tokensOfOwnerByPage(addr1.address, 6, 0)).to.be.reverted;
+      await expect(gnft.tokensOfOwnerByPage(addr1.address, 6, 2)).to.be.reverted;
+
+      await expect(gnft.tokensOfOwnerByPage(addr1.address, 0, 1)).to.be.reverted;
+      await expect(gnft.tokensOfOwnerByPage(addr1.address, 101, 1)).to.be.reverted;
     });
   });
 
@@ -110,15 +197,15 @@ describe('GNFT + GNFTMarket', () => {
       await gnft.connect(addr1).mintToken(tokenUri2);
 
       const owner = await gnft.ownerOf(1);
-      let createdBalance = await gnft.getCreatedBalanceOf(addr1.address);
+      let createdBalance = await gnft.createdBalanceOf(addr1.address);
 
       expect(createdBalance.toNumber()).to.equal(2);
       expect(owner).to.equal(addr1.address);
 
       await gnft.connect(addr1).burn(1);
       await expect(gnft.ownerOf(1)).to.be.reverted;
-      createdBalance = await gnft.getCreatedBalanceOf(addr1.address);
-      const createdToken = await gnft.getCreatedTokenByIndex(addr1.address, 0);
+      createdBalance = await gnft.createdBalanceOf(addr1.address);
+      const createdToken = await gnft.tokenOfCreatorByIndex(addr1.address, 0);
       expect(createdBalance.toNumber()).to.equal(1);
       expect(createdToken.toNumber()).to.equal(2);
     });
@@ -173,8 +260,8 @@ describe('GNFT + GNFTMarket', () => {
 
       const items = await market.getItems();
       expect(items).to.be.an('array').that.has.lengthOf(2);
-      expect(items[0].artist).to.equal(addr1.address);
-      expect(items[1].artist).to.equal(addr2.address);
+      expect(items[0].creator).to.equal(addr1.address);
+      expect(items[1].creator).to.equal(addr2.address);
     });
 
     it('Should store the correct seller address', async () => {
@@ -378,6 +465,43 @@ describe('GNFT + GNFTMarket', () => {
     });
   });
 
+  describe('GNFTMarket.getPaginatedItems()', () => {
+    it('Should get the correct items', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await gnft.connect(addr1).mintToken(tokenUri1);
+
+      await market.connect(addr1).listItem(gnftAddress, 1, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 2, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 3, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 4, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 5, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 6, sellPrice);
+      await market.connect(addr1).listItem(gnftAddress, 7, sellPrice);
+
+      const items1 = await market.getPaginatedItems(6, 1);
+      const items2 = await market.getPaginatedItems(6, 2);
+
+      expect(items1).to.be.an('array').that.has.lengthOf(6);
+      expect(items2).to.be.an('array').that.has.lengthOf(1);
+    });
+
+    it('Should not get invalid pages/page sizes', async () => {
+      await gnft.connect(addr1).mintToken(tokenUri1);
+      await market.connect(addr1).listItem(gnftAddress, 1, sellPrice);
+
+      await expect(market.getPaginatedItems(6, 0)).to.be.reverted;
+      await expect(market.getPaginatedItems(6, 2)).to.be.reverted;
+
+      await expect(market.getPaginatedItems(0, 1)).to.be.reverted;
+      await expect(market.getPaginatedItems(101, 1)).to.be.reverted;
+    });
+  });
+
   describe('GNFTMarket.cancelSell()', () => {
     it('Should not cancel the sell of an item that does not exist', async () => {
       await expect(market.connect(addr1).cancelSell(1)).to.be.reverted;
@@ -405,7 +529,7 @@ describe('GNFT + GNFTMarket', () => {
       const item1 = await market.getGNFTItem(1);
       const id1 = item1.itemId.toNumber();
       const tokenId1 = item1.tokenId.toNumber();
-      const artist1 = item1.artist;
+      const artist1 = item1.creator;
       const seller1 = item1.seller;
       expect(id1).to.equal(1);
       expect(tokenId1).to.equal(1);
@@ -417,7 +541,7 @@ describe('GNFT + GNFTMarket', () => {
       const item2 = await market.getGNFTItem(1);
       const id2 = item2.itemId.toNumber();
       const tokenId2 = item2.tokenId.toNumber();
-      const artist2 = item2.artist;
+      const artist2 = item2.creator;
       const seller2 = item2.seller;
       expect(id2).to.equal(2);
       expect(tokenId2).to.equal(1);
@@ -427,10 +551,10 @@ describe('GNFT + GNFTMarket', () => {
 
     it('Should return an empty item for an invalid id', async () => {
       const item = await market.getGNFTItem(1);
-      let { itemId, tokenId, artist, seller } = item;
+      let { itemId, tokenId, creator, seller } = item;
       expect(itemId.toNumber()).to.equal(0);
       expect(tokenId.toNumber()).to.equal(0);
-      expect(artist).to.equal(nullAddress);
+      expect(creator).to.equal(nullAddress);
       expect(seller).to.equal(nullAddress);
     });
   });

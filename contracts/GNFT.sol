@@ -5,79 +5,83 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "./GNFTArtistEnumerable.sol";
 
-contract GNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
+contract GNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, GNFTArtistEnumerable {
     using Counters for Counters.Counter;
     Counters.Counter private _ids;
-    mapping(uint256 => address) private _artists;
-    mapping(address => uint256) private _createdBalances;
-    mapping(address => mapping(uint256 => uint256)) private _createdTokens;
-    mapping(uint256 => uint256) _idToCreatedIndex;
 
     constructor() ERC721("G-NFT", "GNFT") {}
+
+    function contractURI() public pure returns (string memory) {
+        return "https://ipfs.infura.io/ipfs/QmY4aaVmPoAGSFL2WDSJ8X94CWhQeUrqeXUWy41HSno8sb";
+    }
+
+    event PermanentURI(string _value, uint256 indexed _id);
 
     function mintToken(string memory _tokenURI) public returns (uint256) {
         _ids.increment();
         uint256 newId = _ids.current();
         _safeMint(msg.sender, newId);
         _setTokenURI(newId, _tokenURI);
-        _setArtistOf(newId, msg.sender);
+        _setCreatorOf(newId, msg.sender);
+        emit PermanentURI(_tokenURI, newId);
         return newId;
     }
 
-    function getArtistOf(uint256 id) public view returns (address) {
-        return _artists[id];
+    struct TokenData {
+        uint256 id;
+        string tokenURI;
+        address owner;
     }
 
-    function _setArtistOf(uint256 id, address artist) private {
-        _artists[id] = artist;
-        uint256 index = _createdBalances[artist];
-        _createdBalances[artist] += 1;
-        _createdTokens[artist][index] = id;
-        _idToCreatedIndex[id] = index;
+    function tokensOfCreatorByPage(address creator, uint256 pageSize, uint256 page) public view returns (TokenData[] memory) {
+        require(pageSize > 0 && pageSize < 101, "page size out of bounds");
+        require(page > 0 && (page - 1) * pageSize < createdBalanceOf(creator), "page out of bounds");
+        
+        uint256 startIndex = (page - 1) * pageSize;
+        uint256 endIndex = createdBalanceOf(creator) - 1 < startIndex + pageSize - 1 ? createdBalanceOf(creator) - 1 : startIndex + pageSize - 1;
+        uint256 actualPageSize = endIndex - startIndex + 1;
+        TokenData[] memory tokens = new TokenData[](actualPageSize);
+
+        for (uint256 i = 0; i < actualPageSize; i++) {
+            uint256 tokenId = tokenOfCreatorByIndex(creator, (i + (pageSize * (page - 1))));
+            tokens[i] = TokenData(tokenId, tokenURI(tokenId), ownerOf(tokenId));
+        }
+
+        return tokens;
     }
 
-    function getCreatedBalanceOf(address artist) public view returns (uint256) {
-        return _createdBalances[artist];
+    function tokensOfOwnerByPage(address owner, uint256 pageSize, uint256 page) public view returns (TokenData[] memory) {
+        require(pageSize > 0 && pageSize < 101, "page size out of bounds");
+        require(page > 0 && (page - 1) * pageSize < balanceOf(owner), "page out of bounds");
+
+        uint256 startIndex = (page - 1) * pageSize;
+        uint256 endIndex = balanceOf(owner) - 1 < startIndex + pageSize - 1 ? balanceOf(owner) - 1 : startIndex + pageSize - 1;
+        uint256 actualPageSize = endIndex - startIndex + 1;
+
+        TokenData[] memory tokens = new TokenData[](actualPageSize);
+
+        for (uint256 i = 0; i < actualPageSize; i++) {
+            uint256 tokenId = tokenOfOwnerByIndex(owner, (i + (pageSize * (page - 1))));
+            tokens[i] = TokenData(tokenId, tokenURI(tokenId), owner);
+        }
+
+        return tokens;
     }
 
-    function getCreatedTokenByIndex(address artist, uint256 idx)
-        public
-        view
-        returns (uint256)
-    {
-        require(
-            idx < getCreatedBalanceOf(artist),
-            "artist index out of bounds"
-        );
-        return _createdTokens[artist][idx];
-    }
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 id
-    ) internal override(ERC721, ERC721Enumerable) {
+    function _beforeTokenTransfer(address from, address to, uint256 id) internal override(ERC721, ERC721Enumerable) {
+        if (to == address(0)) {
+            _removeFromCreatedEnumeration(from, id);
+        }
         super._beforeTokenTransfer(from, to, id);
     }
 
     function burn(uint256 id) public {
-        require(
-            msg.sender == _artists[id],
-            "Must be the creator of the token to burn"
-        );
-        require(
-            msg.sender == ERC721.ownerOf(id),
-            "Must be the owner of the token to burn"
-        );
-        _createdBalances[msg.sender] -= 1;
-        uint256 index = _idToCreatedIndex[id];
-        uint256 lastIndex = _createdBalances[msg.sender];
-        uint256 lastId = _createdTokens[msg.sender][lastIndex];
-        _idToCreatedIndex[id] = 0;
-        _idToCreatedIndex[lastId] = index;
-        _createdTokens[msg.sender][index] = lastId;
-        _createdTokens[msg.sender][lastIndex] = 0;
+        require(msg.sender == creatorOf(id), "Must be the creator of the token to burn");
+        require(msg.sender == ERC721.ownerOf(id), "Must be the owner of the token to burn");
+
         _burn(id);
     }
 
@@ -85,21 +89,11 @@ contract GNFT is ERC721, ERC721Enumerable, ERC721URIStorage {
         super._burn(id);
     }
 
-    function tokenURI(uint256 id)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
+    function tokenURI(uint256 id) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(id);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

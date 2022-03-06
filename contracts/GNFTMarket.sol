@@ -4,28 +4,25 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./GNFT.sol";
 
-contract GNFTMarket is ReentrancyGuard {
+contract GNFTMarket is ReentrancyGuard, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _ids;
     Counters.Counter private _itemsSold;
 
-    address payable private _owner;
-
-    constructor() {
-        _owner = payable(msg.sender);
-    }
+    constructor() {}
 
     function getMarketOwner() public view returns (address) {
-        return _owner;
+        return owner();
     }
 
     struct Item {
         uint256 itemId;
         address tokenContract;
         uint256 tokenId;
-        address artist;
+        address creator;
         address seller;
         address owner;
         uint256 price;
@@ -41,7 +38,7 @@ contract GNFTMarket is ReentrancyGuard {
         uint256 indexed itemId,
         address indexed tokenContract,
         uint256 indexed tokenId,
-        address artist,
+        address creator,
         address seller,
         address owner,
         uint256 price,
@@ -57,12 +54,12 @@ contract GNFTMarket is ReentrancyGuard {
         _ids.increment();
         uint256 itemId = _ids.current();
 
-        address artist = GNFT(tokenContract).getArtistOf(tokenId);
+        address creator = GNFT(tokenContract).creatorOf(tokenId);
         _items[itemId] = Item(
             itemId,
             tokenContract,
             tokenId,
-            artist,
+            creator,
             msg.sender,
             address(0),
             price,
@@ -79,7 +76,7 @@ contract GNFTMarket is ReentrancyGuard {
             itemId,
             tokenContract,
             tokenId,
-            artist,
+            creator,
             msg.sender,
             address(0),
             price,
@@ -109,12 +106,12 @@ contract GNFTMarket is ReentrancyGuard {
 
         uint256 tokenId = _items[itemId].tokenId;
         address tokenContract = _items[itemId].tokenContract;
-        address artist = _items[itemId].artist;
+        address creator = _items[itemId].creator;
 
-        if (seller == artist) {
+        if (seller == creator) {
             payable(seller).transfer((msg.value * 98) / 100);
         } else {
-            payable(artist).transfer((msg.value * 20) / 100);
+            payable(creator).transfer((msg.value * 20) / 100);
             payable(seller).transfer((msg.value * 78) / 100);
         }
 
@@ -143,9 +140,13 @@ contract GNFTMarket is ReentrancyGuard {
         }
     }
 
+    function getTotalUnsoldItems() public view returns (uint256) {
+        return _ids.current() - _itemsSold.current();
+    }
+
     function getItems() public view returns (Item[] memory) {
         uint256 itemCount = _ids.current();
-        uint256 unsoldItemCount = itemCount - _itemsSold.current();
+        uint256 unsoldItemCount = getTotalUnsoldItems();
 
         Item[] memory items = new Item[](unsoldItemCount);
 
@@ -165,14 +166,27 @@ contract GNFTMarket is ReentrancyGuard {
         return items;
     }
 
-    function getTotalUnsoldItems() public view returns (uint256) {
-        return _ids.current() - _itemsSold.current();
-    }
-
     function getUnsoldItemByIndex(uint256 idx) public view returns (uint256) {
         uint256 totalUnsold = _ids.current() - _itemsSold.current();
         require(idx < totalUnsold, "unsold item index out of bounds");
         return _unsoldItems[idx];
+    }
+
+    function getPaginatedItems(uint256 pageSize, uint256 page) public view returns (Item[] memory) {
+        require(pageSize > 0 && pageSize < 101, "page size out of bounds");
+        require(page > 0 && (page - 1) * pageSize < getTotalUnsoldItems(), "page out of bounds");
+
+        uint256 startIndex = (page - 1) * pageSize;
+        uint256 endIndex = getTotalUnsoldItems() - 1 < startIndex + pageSize - 1 ? getTotalUnsoldItems() - 1 : startIndex + pageSize - 1;
+        uint256 actualPageSize = endIndex - startIndex + 1;
+        Item[] memory items = new Item[](actualPageSize);
+
+        for(uint256 i = 0; i < actualPageSize; i++) {
+            uint256 itemId = getUnsoldItemByIndex(i + (pageSize * (page - 1)));
+            items[i] = _items[itemId];
+        }
+
+        return items;
     }
 
     function cancelSell(uint256 itemId) public nonReentrant {
@@ -191,8 +205,7 @@ contract GNFTMarket is ReentrancyGuard {
         _removeFromUnsold(itemId);
     }
 
-    function cashOut() public {
-        require(msg.sender == _owner, "Only the owner can cashout the market");
-        _owner.transfer(address(this).balance);
+    function cashOut() public onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
 }

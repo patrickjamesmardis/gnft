@@ -38,6 +38,7 @@ const marketAddress = deployedChainId === 137 ? polygonMarketAddress.toLowerCase
 
 const Wallet = function ({ children }) {
   const [provider, setProvider] = useState(null);
+  const [rpcProvider, setRpcProvider] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [currentAccount, setCurrentAccount] = useState(null);
   const [walletError, setWalletError] = useState(null);
@@ -60,6 +61,17 @@ const Wallet = function ({ children }) {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseStatus, setPurchaseStatus] = useState('Purchase GNFT');
   const router = useRouter();
+
+  const connectDefaultProvider = () => {
+    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const tokenContract = new ethers.Contract(gnftAddress, GNFT.abi, provider);
+    const marketContract = new ethers.Contract(marketAddress, GNFTMarket.abi, provider);
+    return { tokenContract, marketContract, provider };
+  };
+
+  useEffect(() => {
+    setRpcProvider(connectDefaultProvider());
+  }, [])
 
   useEffect(async () => {
     const connectAccounts = async () => {
@@ -139,15 +151,6 @@ const Wallet = function ({ children }) {
       console.log(error);
       setWalletError(error);
     }
-  };
-
-  const connectDefaultProvider = () => {
-    const eProvider = new ethers.providers.JsonRpcProvider(rpc);
-    const defaultTokenContract = new ethers.Contract(gnftAddress, GNFT.abi, eProvider);
-    const defaultMarketContract = new ethers.Contract(marketAddress, GNFTMarket.abi, eProvider);
-    setGnftContract(defaultTokenContract);
-    setMarketContract(defaultMarketContract);
-    return { defaultTokenContract, defaultMarketContract };
   };
 
   const mint = async () => {
@@ -323,6 +326,7 @@ const Wallet = function ({ children }) {
     gnftContract,
     marketContract,
     connectDefaultProvider,
+    rpcProvider,
     gnftAddress,
     marketAddress,
     wrongNetwork,
