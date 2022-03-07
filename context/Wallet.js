@@ -29,6 +29,8 @@ const polygonRpc = `https://polygon-mainnet.infura.io/v3/${process.env.NEXT_PUBL
 
 const network = deployedChainId === 137 ? 'polygon' : 'mumbai';
 const rpc = deployedChainId === 137 ? polygonRpc : mumbaiRpc;
+const rpcUrls = deployedChainId === 137 ? ['https://polygon-rpc.com'] : ['https://rpc-mumbai.maticvigil.com'];
+const blockExplorerUrls = deployedChainId === 137 ? ['https://polygonscan.com'] : ['https://mumbai.polygonscan.com'];
 const wrongNetwork =
   deployedChainId === 137
     ? 'Please connect your wallet to the Polygon Mainnet'
@@ -71,23 +73,51 @@ const Wallet = function ({ children }) {
 
   useEffect(() => {
     setRpcProvider(connectDefaultProvider());
-  }, [])
+  }, []);
 
   useEffect(async () => {
     const connectAccounts = async () => {
       if (provider?.provider) {
+        let account;
         provider.listAccounts().then((a) => {
           setAccounts(a);
+          account = a[0];
         });
         provider.provider.on('accountsChanged', setAccounts);
-        provider.provider.on('disconnect', () => setAccounts([]));
-        provider.provider.on('chainChanged', (chainId) =>
-          chainId !== deployedChainId && chainId !== chainHex ? setWalletError({ chainId }) : setWalletError(null)
-        );
+        provider.provider.on('disconnect', () => {
+          setAccounts([]);
+          setProvider(null);
+        });
+        provider.provider.on('chainChanged', () => {
+          setAccounts([]);
+          setProvider(null);
+        });
         provider.provider.on('message', console.log);
 
         const { chainId } = await provider.getNetwork();
-        chainId !== deployedChainId && chainId !== chainHex ? setWalletError({ chainId }) : setWalletError(null);
+        if (chainId !== deployedChainId && chainId !== chainHex) {
+          provider.send('wallet_switchEthereumChain', [{ chainId: chainHex }]).then(() => {
+            connect();
+          }).catch(() => {
+            provider.send('wallet_addEthereumChain', [{
+              chainId: chainHex,
+              chainName: deployedChainId === 137 ? 'Polygon' : 'Mumbai',
+              nativeCurrency: {
+                name: 'MATIC',
+                symbol: 'MATIC',
+                decimals: 18
+              },
+              rpcUrls,
+              blockExplorerUrls
+            }]).then(() => {
+              connect();
+            }).catch(() => {
+              setWalletError({ chainId });
+            });
+          });
+        } else {
+          getApproval(account);
+        }
       } else {
         setAccounts([]);
       }
@@ -103,7 +133,6 @@ const Wallet = function ({ children }) {
   useEffect(() => {
     if (accounts.length > 0) {
       setCurrentAccount(accounts[0].toLowerCase());
-      getApproval(accounts[0]);
     } else {
       setCurrentAccount(null);
       setMarketApproval(false);

@@ -47,6 +47,8 @@ export default function Dashboard() {
     useEffect(() => {
         if (currentAccount) {
             getBalance();
+        } else {
+            setBalance(0);
         }
     }, [currentAccount]);
 
