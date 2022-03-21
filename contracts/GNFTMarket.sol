@@ -14,10 +14,6 @@ contract GNFTMarket is ReentrancyGuard, Ownable {
 
     constructor() {}
 
-    function getMarketOwner() public view returns (address) {
-        return owner();
-    }
-
     struct Item {
         uint256 itemId;
         address tokenContract;
@@ -142,28 +138,6 @@ contract GNFTMarket is ReentrancyGuard, Ownable {
 
     function getTotalUnsoldItems() public view returns (uint256) {
         return _ids.current() - _itemsSold.current();
-    }
-
-    function getItems() public view returns (Item[] memory) {
-        uint256 itemCount = _ids.current();
-        uint256 unsoldItemCount = getTotalUnsoldItems();
-
-        Item[] memory items = new Item[](unsoldItemCount);
-
-        uint256 currentIndex = 0;
-        uint256 i = 0;
-        uint256 j = 0;
-        while (i < itemCount && j < unsoldItemCount) {
-            if (!_items[i+1].sold) {
-                Item storage currentItem = _items[i+1];
-                items[currentIndex] = currentItem;
-                currentIndex++;
-            }
-            i++;
-            j++;
-        }
-
-        return items;
     }
 
     function getUnsoldItemByIndex(uint256 idx) public view returns (uint256) {

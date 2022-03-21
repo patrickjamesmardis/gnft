@@ -29,15 +29,4 @@ abstract contract GNFTArtistEnumerable is ERC721 {
         require(idx < createdBalanceOf(creator), "creator index out of bounds");
         return _createdTokens[creator][idx];
     }
-
-    function _removeFromCreatedEnumeration(address creator, uint256 id) internal virtual {
-        _createdBalances[creator] -= 1;
-        uint256 index = _idToCreatedIndex[id];
-        uint256 lastIndex = _createdBalances[creator];
-        uint256 lastId = _createdTokens[creator][lastIndex];
-        _idToCreatedIndex[id] = 0;
-        _idToCreatedIndex[lastId] = index;
-        _createdTokens[creator][index] = lastId;
-        _createdTokens[creator][lastIndex] = 0;
-    }
 }
