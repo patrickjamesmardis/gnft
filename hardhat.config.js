@@ -1,6 +1,7 @@
 require('@nomiclabs/hardhat-waffle');
 require('@nomiclabs/hardhat-etherscan');
 require('solidity-coverage');
+require('@typechain/hardhat');
 require('dotenv').config({ path: './.env.local' });
 const fs = require('fs');
 const mnemonic = fs.readFileSync('.secret').toString();
@@ -34,4 +35,7 @@ module.exports = {
       polygonMumbai: process.env.POLYGONSCAN_KEY,
     },
   },
+  typechain: {
+    outDir: 'types'
+  }
 };
