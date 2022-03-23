@@ -1,9 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { parse } from '@babel/parser';
-import { WalletContext } from './Wallet';
 import { Editor } from 'brace';
 import shortHash from 'shorthash2';
-import { create as ipfsHttpClient } from 'ipfs-http-client';
 import type P5 from 'p5';
 
 declare global {
@@ -17,23 +15,21 @@ export type EditorBlockType = {
 };
 
 type SketchContextType = {
-  setP5Instance: React.Dispatch<React.SetStateAction<P5>>,
+  addedBlocks: number,
+  draw: string,
+  editorBlocks: EditorBlockType[],
+  setAddedBlocks: React.Dispatch<React.SetStateAction<number>>,
   setDraw: React.Dispatch<React.SetStateAction<string>>,
-  sketchError: any,
+  setEditorBlocks: React.Dispatch<React.SetStateAction<EditorBlockType[]>>,
+  setP5Instance: React.Dispatch<React.SetStateAction<P5>>,
+  setSketchDescription: React.Dispatch<React.SetStateAction<string>>,
   setSketchError: React.Dispatch<React.SetStateAction<any>>,
-  sketchPaused: boolean,
   setSketchPaused: React.Dispatch<React.SetStateAction<boolean>>,
-  saveSketch: () => Promise<void>,
-  sketchTitle: string,
   setSketchTitle: React.Dispatch<React.SetStateAction<string>>,
   sketchDescription: string,
-  setSketchDescription: React.Dispatch<React.SetStateAction<string>>,
-  openMintModal: () => void,
-  localImage: string,
-  editorBlocks: EditorBlockType[],
-  setEditorBlocks: React.Dispatch<React.SetStateAction<EditorBlockType[]>>,
-  addedBlocks: number,
-  setAddedBlocks: React.Dispatch<React.SetStateAction<number>>,
+  sketchError: any,
+  sketchPaused: boolean,
+  sketchTitle: string
 };
 
 export const SketchContext = createContext<SketchContextType | null>(null);
@@ -42,15 +38,6 @@ export const rn = (max: number) => (Math.floor(Math.random() * max) + 1).toStrin
 export const createId = (idx: number) => {
   return `be-${shortHash(`braceEditor-${idx}-${Date.now()}`)}`;
 };
-
-const client = ipfsHttpClient({
-  host: 'ipfs.infura.io',
-  port: 5001,
-  protocol: 'https',
-  headers: {
-    authorization: `Basic ${process.env.NEXT_PUBLIC_INFURA_IPFS}`,
-  },
-});
 
 const defaultBlocks = [
   {
@@ -75,18 +62,15 @@ const defaultDraw = defaultBlocks.reduce((partial, current) => `${partial}\n${cu
 const drawFunc = new Function('p5', defaultDraw);
 
 const Sketch = ({ children }) => {
-  const [p5Instance, setP5Instance] = useState<P5>(null);
+  const [addedBlocks, setAddedBlocks] = useState(0);
   const [draw, setDraw] = useState(defaultDraw);
+  const [editorBlocks, setEditorBlocks] = useState<EditorBlockType[]>(defaultBlocks);
+  const [p5Instance, setP5Instance] = useState<P5>(null);
+  const [pauseFrameCount, setPauseFrameCount] = useState(0);
+  const [sketchDescription, setSketchDescription] = useState('created at g-nft.app');
   const [sketchError, setSketchError] = useState(null);
   const [sketchPaused, setSketchPaused] = useState(false);
-  const [pauseFrameCount, setPauseFrameCount] = useState(0);
-  const [imageUrl, setImageUrl] = useState<string>(null);
   const [sketchTitle, setSketchTitle] = useState('GNFT Sketch');
-  const [sketchDescription, setSketchDescription] = useState('created at g-nft.app');
-  const [localImage, setLocalImage] = useState<string>(null);
-  const [editorBlocks, setEditorBlocks] = useState<EditorBlockType[]>(defaultBlocks);
-  const [addedBlocks, setAddedBlocks] = useState(0);
-  const { setIsMinting, currentAccount, setIpfsUrl, setMintStatus, setMintModalOpen } = useContext(WalletContext);
 
   useEffect(() => {
     if (!window.drawFunc) {
@@ -129,15 +113,6 @@ const Sketch = ({ children }) => {
   }, [sketchPaused]);
 
   useEffect(() => {
-    if (imageUrl) {
-      const name = sketchTitle || 'GNFT Sketch';
-      const description = sketchDescription || 'created at g-nft.app';
-      addMetadata(JSON.stringify({ name, description, image: imageUrl, sourceCode: draw.trim(), artist: currentAccount }));
-      setImageUrl(null);
-    }
-  }, [imageUrl]);
-
-  useEffect(() => {
     !sketchTitle && setSketchTitle('GNFT Sketch');
   }, [sketchTitle]);
 
@@ -145,93 +120,22 @@ const Sketch = ({ children }) => {
     !sketchDescription && setSketchDescription('created at g-nft.app');
   }, [sketchDescription]);
 
-  const addMetadata = async (file: string) => {
-    try {
-      const size = Buffer.byteLength(file);
-      setMintStatus(`Uploading metadata to IFPS. (0 / ${size} B)`);
-      const added = await client.add(file, {
-        pin: true,
-        progress: (prog) => setMintStatus(`Uploading metadata to IFPS. (${prog} / ${size} B)`),
-      });
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      setIpfsUrl(url);
-    } catch (error) {
-      setIsMinting(false);
-      setMintStatus('Error uploading metadata to IPFS.');
-      setTimeout(() => {
-        setIsMinting(false);
-        setMintStatus('Mint Sketch');
-        setMintModalOpen(false);
-      }, 5000);
-      console.log(error);
-    }
-  };
-
-  const getSketchBlob = () => {
-    if (p5Instance) {
-      if (localImage) {
-        URL.revokeObjectURL(localImage);
-      }
-
-      document.querySelector('canvas').toBlob(b => {
-        const url = URL.createObjectURL(b);
-        setLocalImage(url);
-      });
-    }
-  };
-
-  const openMintModal = () => {
-    setSketchPaused(true);
-    getSketchBlob();
-    setMintModalOpen(true);
-  }
-
-  const saveSketch = async () => {
-    if (p5Instance) {
-      setMintStatus('Uploading image to IPFS.');
-      setIsMinting(true);
-      document.querySelector('canvas').toBlob(async b => {
-        try {
-          const { size } = b;
-          setMintStatus(`Uploading image to IPFS. (0 / ${size} B)`);
-          const added = await client.add(b, {
-            pin: true,
-            progress: (prog) => setMintStatus(`Uploading image to IPFS. (${prog} / ${size} B)`),
-          });
-          const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-          setImageUrl(url);
-        } catch (error) {
-          setIsMinting(false);
-          setMintStatus('Error uploading image to IPFS.');
-          setTimeout(() => {
-            setIsMinting(false);
-            setMintStatus('Mint Sketch');
-            setMintModalOpen(false);
-          }, 5000);
-          console.log(error);
-        }
-      });
-    }
-  };
-
-  const context = {
-    setP5Instance,
+  const context: SketchContextType = {
+    addedBlocks,
+    draw,
+    editorBlocks,
+    setAddedBlocks,
     setDraw,
-    sketchError,
+    setEditorBlocks,
+    setP5Instance,
+    setSketchDescription,
     setSketchError,
-    sketchPaused,
     setSketchPaused,
-    saveSketch,
-    sketchTitle,
     setSketchTitle,
     sketchDescription,
-    setSketchDescription,
-    openMintModal,
-    localImage,
-    editorBlocks,
-    setEditorBlocks,
-    addedBlocks,
-    setAddedBlocks
+    sketchError,
+    sketchPaused,
+    sketchTitle
   };
 
   return <SketchContext.Provider value={context}>{children}</SketchContext.Provider>;

@@ -13,7 +13,7 @@ import PurchaseModal from '../../components/PurchaseModal';
 
 
 export default function Token() {
-  const { connect, currentAccount, listItemModalOpen, setListItemModalOpen, cancelModalOpen, setCancelModalOpen, purchaseModalOpen, setPurchaseModalOpen } = useContext(WalletContext);
+  const { connect, currentAccount } = useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState<string>(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState<string>(null);
@@ -22,6 +22,9 @@ export default function Token() {
   const [seller, setSeller] = useState<string>(null);
   const [price, setPrice] = useState<BigNumber | null>(null);
   const [itemId, setItemId] = useState<BigNumber | null>(null);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [listItemModalOpen, setListItemModalOpen] = useState(false);
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
   const router = useRouter();
   const { id: _id } = router.query;
   const id = _id ? (typeof _id === 'string' ? _id : _id[0]) : '';
@@ -180,9 +183,9 @@ export default function Token() {
           )}
         </div>
       </div>
-      <ListItemModal tokenId={id} />
-      {itemId && <CancelModal itemId={itemId} />}
-      {itemId && <PurchaseModal itemId={itemId} price={price} />}
+      <ListItemModal tokenId={id} modalOpen={listItemModalOpen} setModalOpen={setListItemModalOpen} />
+      {itemId && <CancelModal itemId={itemId} modalOpen={cancelModalOpen} setModalOpen={setCancelModalOpen} />}
+      {itemId && <PurchaseModal itemId={itemId} price={price} modalOpen={purchaseModalOpen} setModalOpen={setPurchaseModalOpen} />}
     </>
   );
 }

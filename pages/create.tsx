@@ -12,6 +12,10 @@ const P5Sketch = dynamic(import('../components/P5Sketch'), { ssr: false });
 export default function Create() {
   const { sketchTitle, sketchDescription } = useContext(SketchContext);
   const [supportedBrowser, setSupportedBrowser] = useState(true);
+  const [mintModalOpen, setMintModalOpen] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
+  const [mintStatus, setMintStatus] = useState('Mint Sketch');
+  const [localImage, setLocalImage] = useState(null);
 
   useEffect(() => {
     console.log(MediaRecorder.isTypeSupported('video/webm'));
@@ -37,11 +41,11 @@ export default function Create() {
           </div>
           <div className="sketchContainer lg:pl-3 order-1 lg:order-2 lg:fixed lg:right-0">
             <P5Sketch />
-            <SketchControls />
+            <SketchControls setModalOpen={setMintModalOpen} status={isMinting} statusMessage={mintStatus} setLocalImage={setLocalImage} />
           </div>
         </div>}
       </div>
-      {supportedBrowser && <MintModal />}
+      {supportedBrowser && <MintModal modalOpen={mintModalOpen} setModalOpen={setMintModalOpen} status={isMinting} setStatus={setIsMinting} statusMessage={mintStatus} setStatusMesasge={setMintStatus} localImage={localImage} />}
     </>
   );
 }
