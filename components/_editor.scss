@@ -3,7 +3,7 @@
 }
 
 .editorContainer {
-  width: calc(100vw - 560px);
+  width: calc(100vw - 512px);
   height: 494px;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .editor {
-  width: calc(100vw - 608px);
+  width: calc(100vw - 560px);
   min-height: 96px;
 }
 
@@ -34,7 +34,8 @@
 @keyframes opacityUp {
   from {
     opacity: 0%;
-  } to {
+  }
+  to {
     opacity: 100%;
   }
 }
@@ -59,16 +60,17 @@
 }
 
 @media (max-width: 1023px) {
-  .editorContainer, .editor {
-    width: calc(100vw - 48px);
+  .editorContainer,
+  .editor {
+    width: 100vw;
   }
 
   .sketchContainer {
     padding-left: 16px;
 
     canvas {
-      max-width: calc(100vw - 80px);
-      max-height: calc(100vw - 80px);
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vw - 32px);
     }
   }
 }
@@ -78,8 +80,8 @@
     padding-left: 0;
 
     canvas {
-      max-width: calc(100vw - 48px);
-      max-height: calc(100vw - 48px);
+      max-width: 100vw;
+      max-height: 100vw;
     }
   }
 }
@@ -125,12 +127,13 @@
   }
 
   .editorContainer {
-    .bx--label, .bx--slider__range-label {
+    .bx--label,
+    .bx--slider__range-label {
       color: $stone-400;
     }
 
     .bx--slider {
-      .bx--slider__thumb:not(:focus), 
+      .bx--slider__thumb:not(:focus),
       .bx--slider__thumb:not(:focus) ~ .bx--slider__filled-track {
         background: $stone-600;
       }
@@ -144,6 +147,5 @@
     .bx--slider__track:before {
       background: $stone-500;
     }
-
   }
 }

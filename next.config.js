@@ -6,6 +6,6 @@ module.exports = {
     includePaths: [path.join(__dirname, 'styles')],
   },
   images: {
-    domains: ['ipfs.infura.io'],
+    domains: ['ipfs.infura.io', 'chart.googleapis.com'],
   },
 };

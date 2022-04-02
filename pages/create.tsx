@@ -13,12 +13,9 @@ export default function Create() {
   const { sketchTitle, sketchDescription } = useContext(SketchContext);
   const [supportedBrowser, setSupportedBrowser] = useState(true);
   const [mintModalOpen, setMintModalOpen] = useState(false);
-  const [isMinting, setIsMinting] = useState(false);
-  const [mintStatus, setMintStatus] = useState('Mint Sketch');
   const [localImage, setLocalImage] = useState(null);
 
   useEffect(() => {
-    console.log(MediaRecorder.isTypeSupported('video/webm'));
     setSupportedBrowser(MediaRecorder.isTypeSupported('video/webm'));
   }, []);
 
@@ -32,20 +29,26 @@ export default function Create() {
       </Head>
       <div className="pb-4">
         <div className="px-4 pt-4 pb-4 text-stone-900 dark:text-stone-50">
-          <h1 className="text-2xl text-gradient"><span>{supportedBrowser ? sketchTitle : 'Unsupported Browser'}</span></h1>
+          <h1 className="text-2xl text-gradient">
+            <span>{supportedBrowser ? sketchTitle : 'Unsupported Browser'}</span>
+          </h1>
           {supportedBrowser && <p className="text-stone-900 dark:text-stone-50">{sketchDescription}</p>}
         </div>
-        {supportedBrowser && <div className="flex flex-wrap">
-          <div className="editorContainer mt-4 lg:mt-0 order-2 lg:order-1">
-            <Editor />
+        {supportedBrowser && (
+          <div className="flex flex-wrap">
+            <div className="editorContainer mt-4 lg:mt-0 order-2 lg:order-1">
+              <Editor />
+            </div>
+            <div className="sketchContainer lg:pl-3 order-1 lg:order-2 lg:fixed lg:right-0">
+              <P5Sketch />
+              <SketchControls setMintOpen={setMintModalOpen} setLocalImage={setLocalImage} />
+            </div>
           </div>
-          <div className="sketchContainer lg:pl-3 order-1 lg:order-2 lg:fixed lg:right-0">
-            <P5Sketch />
-            <SketchControls setModalOpen={setMintModalOpen} status={isMinting} statusMessage={mintStatus} setLocalImage={setLocalImage} />
-          </div>
-        </div>}
+        )}
       </div>
-      {supportedBrowser && <MintModal modalOpen={mintModalOpen} setModalOpen={setMintModalOpen} status={isMinting} setStatus={setIsMinting} statusMessage={mintStatus} setStatusMesasge={setMintStatus} localImage={localImage} />}
+      {supportedBrowser && (
+        <MintModal modalOpen={mintModalOpen} setModalOpen={setMintModalOpen} localImage={localImage} />
+      )}
     </>
   );
 }

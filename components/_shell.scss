@@ -14,27 +14,29 @@ a.bx--header__name {
   }
 }
 
-.bx--header__nav {
-  position: absolute;
-  right: 0;
+.walletNav {
+  &.bx--header__nav {
+    position: absolute;
+    right: 0;
 
-  span {
-    background-color: #e79e8f;
-    background-image: linear-gradient(133deg, #e79e8f, #9495bc);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -moz-background-clip: text;
-    -moz-text-fill-color: transparent;
+    span {
+      background-color: #e79e8f;
+      background-image: linear-gradient(133deg, #e79e8f, #9495bc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -moz-background-clip: text;
+      -moz-text-fill-color: transparent;
+    }
+
+    &::before {
+      opacity: 0;
+    }
   }
-}
 
-.bx--header__nav::before {
-  opacity: 0;
-}
-
-.bx--header__menu-item {
-  cursor: pointer;
+  .bx--header__menu-item {
+    cursor: pointer;
+  }
 }
 
 .bx--header__action,

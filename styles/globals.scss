@@ -1,12 +1,19 @@
 @import 'carbon-components/scss/globals/grid/grid';
-@import 'carbon-components/scss/components/ui-shell/ui-shell';
 @import 'carbon-components/scss/components/button/button';
+@import 'carbon-components/scss/components/checkbox/checkbox';
+@import 'carbon-components/scss/components/combo-box/combo-box';
+@import 'carbon-components/scss/components/copy-button/copy-button';
+@import 'carbon-components/scss/components/data-table-v2/data-table-v2';
 @import 'carbon-components/scss/components/modal/modal';
-@import 'carbon-components/scss/components/text-input/text-input';
 @import 'carbon-components/scss/components/number-input/number-input';
 @import 'carbon-components/scss/components/pagination/pagination';
+@import 'carbon-components/scss/components/progress-bar/progress-bar';
+@import 'carbon-components/scss/components/radio-button/radio-button';
 @import 'carbon-components/scss/components/skeleton/skeleton';
 @import 'carbon-components/scss/components/slider/slider';
+@import 'carbon-components/scss/components/tabs/tabs';
+@import 'carbon-components/scss/components/text-input/text-input';
+@import 'carbon-components/scss/components/ui-shell/ui-shell';
 
 @tailwind base;
 @tailwind components;
@@ -38,16 +45,12 @@ $stone-50: #fafaf9;
 }
 
 .tokensBG {
-  background-image: url('../assets/tokens.png');
+  background-image: url('/tokens.png');
 }
 
 .tokensOverlay {
-  background: #262626aa;
+  background: #fafaf9bb;
   backdrop-filter: blur(10px);
-}
-
-.fullWidth {
-  width: calc(100vw - 48px);
 }
 
 .gradientBG {
@@ -60,9 +63,10 @@ $stone-50: #fafaf9;
 }
 
 .bx--modal-footer .bx--btn--secondary {
-  background-color: rgb(57,57,57);
+  background-color: rgb(57, 57, 57);
+
   &:hover {
-    background-color: rgb(76,76,76);
+    background-color: rgb(76, 76, 76);
   }
 }
 
@@ -77,15 +81,15 @@ $stone-50: #fafaf9;
   border: none;
   transition: background-position 0.75s;
 
-  &.loading {
-    animation: mintLoading 2s infinite alternate ease-in-out;
-    transition: background-position 0.75s;
+  &.opacity-50 {
+    opacity: 50%;
+
     &:hover {
       color: $stone-50;
     }
   }
 
-  &:hover {
+  &:not(.opacity-50):hover {
     background-position: 100% 100% !important;
   }
 }
@@ -95,40 +99,145 @@ $stone-50: #fafaf9;
     background-color: $stone-50;
   }
 
-  .bx--select-input, .bx--pagination__button {
-      &:focus{
-        box-shadow: none;
-      }
+  .bx--select-input,
+  .bx--pagination__button {
+    &:focus {
+      box-shadow: none;
+    }
   }
 }
 
-.web3modal-modal-lightbox {
-  z-index: 999999999 !important;
+.cursor-default {
+  cursor: default !important;
 }
 
-.bx--number input[type=number] {
+.bx--number input[type='number'] {
   background-color: #f4f4f4 !important;
 }
 
-@keyframes mintLoading {
-  from {
-    background-position: 0% 0%;
+.bx--tabs--scrollable {
+  .bx--tabs--scrollable__nav-item--selected .bx--tabs--scrollable__nav-link {
+    border-bottom: 2px solid;
+    border-image-source: linear-gradient(133deg, #e79e8f, #9495bc, #9495bc);
+    border-image-slice: 1;
   }
-  to {
-    background-position: 50% 50%;
+
+  .bx--tabs--scrollable__nav-link {
+    &:focus {
+      outline: none !important;
+    }
+  }
+
+  .bx--tabs__overflow-indicator--left {
+    background-image: linear-gradient(to left, transparent, $stone-50);
+  }
+
+  .bx--tabs__overflow-indicator--right {
+    background-image: linear-gradient(to right, transparent, $stone-50);
   }
 }
 
+.bx--tab-content {
+  &:focus {
+    outline: none !important;
+  }
+}
+
+.react-tel-input {
+  padding-bottom: 0 !important;
+  margin-bottom: 2rem;
+
+  .form-control,
+  .flag-dropdown {
+    border-radius: 0 !important;
+    border-color: #8d8d8d !important;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+  }
+
+  .form-control {
+    background-color: #f4f4f4 !important;
+    width: 100%;
+
+    &:focus {
+      outline: 2px solid #0f62fe;
+      outline-offset: -2px;
+    }
+  }
+
+  .flag-dropdown,
+  .country-list,
+  .selected-flag {
+    background-color: transparent !important;
+    border-color: #8d8d8d !important;
+    box-shadow: none;
+
+    .country {
+      background-color: $stone-200 !important;
+
+      &.highlight,
+      &:hover {
+        background-color: $stone-300 !important;
+      }
+    }
+  }
+}
+
+.spinner + span {
+  margin-top: 25px !important;
+  margin-bottom: 25px !important;
+}
+
+.spinner {
+  width: 100px;
+  height: 100px;
+  border: 4px solid transparent;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 100%;
+
+  background-image: linear-gradient(#f4f4f4, #f4f4f4), linear-gradient(133deg, #e79e8f, #9495bc, #9495bc);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+
+  animation: spin 1s infinite linear;
+  position: absolute;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+::-webkit-scrollbar-track {
+  background-color: $stone-50;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $stone-200;
+}
+
 @media (prefers-color-scheme: dark) {
+  .tokensOverlay {
+    background: #1c1917aa;
+  }
+
   .bx--pagination {
     border-color: $stone-700;
 
     .bx--select-input {
       background-color: $stone-900;
-      color: $stone-50
+      color: $stone-50;
     }
 
-    .bx--select-input, .bx--pagination__button {
+    .bx--select-input,
+    .bx--pagination__button {
       border-color: $stone-700 !important;
 
       &.bx--btn--disabled {
@@ -157,4 +266,79 @@ $stone-50: #fafaf9;
     }
   }
 
+  .bx--tabs--scrollable {
+    .bx--tabs__overflow-indicator--left {
+      background-image: linear-gradient(to left, transparent, $stone-900);
+    }
+
+    .bx--tabs__overflow-indicator--right {
+      background-image: linear-gradient(to right, transparent, $stone-900);
+    }
+
+    .bx--tab--overflow-nav-button {
+      svg {
+        fill: $stone-200;
+      }
+    }
+  }
+
+  .profileCardInputs {
+    .bx--label {
+      color: $stone-300;
+    }
+
+    .bx--checkbox-label::before {
+      border-color: $stone-50;
+    }
+
+    .bx--checkbox:checked + .bx--checkbox-label::before {
+      border-color: $stone-50;
+      background-color: $stone-50;
+    }
+
+    .bx--checkbox-label::after {
+      border-color: $stone-900;
+    }
+
+    .bx--text-input {
+      background-color: $stone-800;
+      color: $stone-50;
+    }
+  }
+
+  .bx--data-table {
+    border-top: 1px solid $stone-700;
+
+    thead,
+    th {
+      background-color: $stone-900;
+      color: $stone-50;
+      border-color: transparent;
+    }
+
+    tbody,
+    td {
+      background-color: $stone-800;
+      color: $stone-200;
+      border-color: transparent;
+    }
+  }
+
+  .bx--copy-btn:not(.bx--modal-container .bx--copy-btn) {
+    &:hover {
+      background-color: $stone-700;
+    }
+
+    .bx--copy-btn__feedback {
+      background-color: $stone-500 !important;
+    }
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: $stone-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: $stone-800;
+  }
 }

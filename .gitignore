@@ -38,5 +38,9 @@ yarn-error.log*
 coverage.json
 typechain
 
-#Hardhat files
+# Hardhat files
+artifacts
 cache
+
+# Firebase
+.firebase*

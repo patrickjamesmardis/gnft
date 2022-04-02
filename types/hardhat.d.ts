@@ -61,6 +61,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GNFTArtistEnumerable__factory>;
     getContractFactory(
+      name: "GNFTCreatorEnumerable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GNFTCreatorEnumerable__factory>;
+    getContractFactory(
       name: "GNFTMarket",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GNFTMarket__factory>;
@@ -125,6 +129,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.GNFTArtistEnumerable>;
+    getContractAt(
+      name: "GNFTCreatorEnumerable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.GNFTCreatorEnumerable>;
     getContractAt(
       name: "GNFTMarket",
       address: string,

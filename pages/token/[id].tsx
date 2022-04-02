@@ -6,25 +6,20 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { WalletContext, prettyAddress, rpcProvider } from '../../context/Wallet';
 import { gnftAddress, blockExplorerUrls, marketAddress } from '../../context/config';
-
-import ListItemModal from '../../components/ListItemModal';
 import CancelModal from '../../components/CancelModal';
-import PurchaseModal from '../../components/PurchaseModal';
-
 
 export default function Token() {
-  const { connect, currentAccount } = useContext(WalletContext);
+  const { account, modalOpen, setModalOpen, setTransactionToken, setTransactionItem, setTransactionPrice } =
+    useContext(WalletContext);
   const [tokenURI, setTokenURI] = useState<string>(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState<string>(null);
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [seller, setSeller] = useState<string>(null);
-  const [price, setPrice] = useState<BigNumber | null>(null);
-  const [itemId, setItemId] = useState<BigNumber | null>(null);
+  const [price, setPrice] = useState<BigNumber>(null);
+  const [itemId, setItemId] = useState<BigNumber>(null);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
-  const [listItemModalOpen, setListItemModalOpen] = useState(false);
-  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
   const router = useRouter();
   const { id: _id } = router.query;
   const id = _id ? (typeof _id === 'string' ? _id : _id[0]) : '';
@@ -54,19 +49,19 @@ export default function Token() {
     setSeller(item.seller.toLowerCase());
     setPrice(item.price);
     setItemId(item.itemId);
-  }
+  };
 
   useEffect(() => {
     if (id) {
       fetchURI(parseInt(id));
     }
-  }, [id, currentAccount]);
+  }, [id, account]);
 
   useEffect(() => {
-    if (!listItemModalOpen && !cancelModalOpen && !purchaseModalOpen && id) {
+    if (!modalOpen && !cancelModalOpen && id) {
       fetchURI(parseInt(id));
     }
-  }, [listItemModalOpen, cancelModalOpen, purchaseModalOpen])
+  }, [modalOpen, cancelModalOpen]);
 
   useEffect(() => {
     if (id && retryCount < 10) {
@@ -79,7 +74,7 @@ export default function Token() {
   useEffect(() => {
     const fetchData = async () => {
       if (tokenURI) {
-        axios.get(tokenURI).then((data) => setTokenData(data.data));
+        axios.get(tokenURI).then(data => setTokenData(data.data));
       }
     };
     fetchData();
@@ -111,44 +106,107 @@ export default function Token() {
           {tokenData && (
             <>
               <p className="pt-2">{tokenData.description}</p>
-              <p className="pt-2 text-xs">Artist: {currentAccount && tokenData && currentAccount === tokenData.artist.toLowerCase() ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(tokenData.artist)}</span>}</p>
-              <p className="text-xs">Owner: {currentAccount && currentAccount === owner ? <span className="text-base text-gradient"><span>you</span></span> : marketAddress === owner ? <span className="text-base">GNFT Market</span> : <span className="text-base">{prettyAddress(owner)}</span>}</p>
-              {seller && <p className="text-xs">Seller: {currentAccount && seller === currentAccount ? <span className="text-base text-gradient"><span>you</span></span> : <span className="text-base">{prettyAddress(seller)}</span>}</p>}
-              {currentAccount && owner && currentAccount === owner && <div id="ownerActions" className="pt-4">
-                <button
-                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
-                  onClick={() => { setListItemModalOpen(true) }}
-                >
-                  Sell GNFT
-                </button>
-              </div>}
-              {currentAccount && owner === marketAddress && currentAccount === seller && <div id="cancelActions" className="pt-4 flex items-center">
-                {price && <h1 className="mr-4 text-gradient text-xl"><span>{ethers.utils.formatEther(price)} MATIC</span></h1>}
-                <button
-                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
-                  onClick={() => { setCancelModalOpen(true) }}
-                >
-                  Cancel Sell
-                </button>
-              </div>}
-              {currentAccount && owner === marketAddress && currentAccount !== seller && <div id="purchaseActions" className="pt-4 flex items-center">
-                {price && <h1 className="mr-4 text-gradient text-xl"><span>{ethers.utils.formatEther(price)} MATIC</span></h1>}
-                <button
-                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
-                  onClick={() => { setPurchaseModalOpen(true) }}
-                >
-                  Purchase
-                </button>
-              </div>}
-              {!currentAccount && owner === marketAddress && <div id="noUserActions" className="pt-4 flex items-center">
-                {price && <h1 className="mr-4 text-gradient text-xl"><span>{ethers.utils.formatEther(price)} MATIC</span></h1>}
-                <button
-                  className={`gradientBG py-3 px-6 text-stone-50 text-left`}
-                  onClick={() => { connect() }}
-                >
-                  Connect Wallet
-                </button>
-              </div>}
+              <p className="pt-2 text-xs">
+                Creator:{' '}
+                {account && tokenData && account.toLowerCase() === tokenData.artist.toLowerCase() ? (
+                  <span className="text-base text-gradient">
+                    <span>you</span>
+                  </span>
+                ) : (
+                  <span className="text-base">{prettyAddress(tokenData.artist)}</span>
+                )}
+              </p>
+              <p className="text-xs">
+                Owner:{' '}
+                {account && account.toLowerCase() === owner ? (
+                  <span className="text-base text-gradient">
+                    <span>you</span>
+                  </span>
+                ) : marketAddress === owner ? (
+                  <span className="text-base">GNFT Market</span>
+                ) : (
+                  <span className="text-base">{prettyAddress(owner)}</span>
+                )}
+              </p>
+              {seller && (
+                <p className="text-xs">
+                  Seller:{' '}
+                  {account && seller === account.toLowerCase() ? (
+                    <span className="text-base text-gradient">
+                      <span>you</span>
+                    </span>
+                  ) : (
+                    <span className="text-base">{prettyAddress(seller)}</span>
+                  )}
+                </p>
+              )}
+              {account && owner && account.toLowerCase() === owner && (
+                <div id="ownerActions" className="pt-4">
+                  <button
+                    className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                    onClick={() => {
+                      setTransactionToken(BigNumber.from(id));
+                      setModalOpen('SELL');
+                    }}
+                  >
+                    Sell GNFT
+                  </button>
+                </div>
+              )}
+              {account && owner === marketAddress && account.toLowerCase() === seller && (
+                <div id="cancelActions" className="pt-4 flex items-center">
+                  {price && (
+                    <h1 className="mr-4 text-gradient text-xl">
+                      <span>{ethers.utils.formatEther(price)} MATIC</span>
+                    </h1>
+                  )}
+                  <button
+                    className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                    onClick={() => {
+                      setCancelModalOpen(true);
+                    }}
+                  >
+                    Cancel Sell
+                  </button>
+                </div>
+              )}
+              {account && owner === marketAddress && account.toLowerCase() !== seller && (
+                <div id="purchaseActions" className="pt-4 flex items-center">
+                  {price && (
+                    <h1 className="mr-4 text-gradient text-xl">
+                      <span>{ethers.utils.formatEther(price)} MATIC</span>
+                    </h1>
+                  )}
+                  <button
+                    className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                    onClick={() => {
+                      setTransactionItem(itemId);
+                      setTransactionToken(BigNumber.from(id));
+                      setTransactionPrice(price);
+                      setModalOpen('PURCHASE');
+                    }}
+                  >
+                    Purchase
+                  </button>
+                </div>
+              )}
+              {!account && owner === marketAddress && (
+                <div id="noUserActions" className="pt-4 flex items-center">
+                  {price && (
+                    <h1 className="mr-4 text-gradient text-xl">
+                      <span>{ethers.utils.formatEther(price)} MATIC</span>
+                    </h1>
+                  )}
+                  <button
+                    className={`gradientBG py-3 px-6 text-stone-50 text-left`}
+                    onClick={() => {
+                      setModalOpen('CONNECT');
+                    }}
+                  >
+                    Connect Wallet
+                  </button>
+                </div>
+              )}
 
               <div className="mt-4">
                 <Image
@@ -183,9 +241,9 @@ export default function Token() {
           )}
         </div>
       </div>
-      <ListItemModal tokenId={id} modalOpen={listItemModalOpen} setModalOpen={setListItemModalOpen} />
-      {itemId && <CancelModal itemId={itemId} modalOpen={cancelModalOpen} setModalOpen={setCancelModalOpen} />}
-      {itemId && <PurchaseModal itemId={itemId} price={price} modalOpen={purchaseModalOpen} setModalOpen={setPurchaseModalOpen} />}
+      {itemId && account && (
+        <CancelModal itemId={itemId} tokenId={id} modalOpen={cancelModalOpen} setModalOpen={setCancelModalOpen} />
+      )}
     </>
   );
 }

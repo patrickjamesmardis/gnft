@@ -37,7 +37,6 @@ export default function Home() {
         }
       };
       getTokens();
-
     }
   }, [balance]);
 
@@ -51,15 +50,25 @@ export default function Home() {
       </Head>
 
       <div className="text-stone-900 dark:text-stone-50 py-4">
-        <h1 className="text-3xl text-gradient px-4 pb-24"><span>Create, mint, and collect GNFTs</span></h1>
+        <h1 className="text-3xl text-gradient px-4 pb-20">
+          <span>Create, mint, and collect GNFTs</span>
+        </h1>
         <div className="tokensBG">
-          <div className="tokensOverlay min-h-[500px] pt-4">
-
+          <div className="tokensOverlay min-h-[516px] pt-4">
             <h2 className="text-2xl px-4">What is GNFT?</h2>
-            <p className="max-w-3xl pt-4 px-4 text-lg">GNFT combines a P5.js playground and NFT marketplace to allow anyone to create, mint, and collect generative art NFTs. NFTs provide a decentralized ledger of transactions to validate authenticity and ownership. GNFTs use the InterPlanetary File System for decentralized file storage to ensure your content is secure and accessible.</p>
-            <div className="mt-6 ml-4">
-              <Link href="/create"><a className="gradientBG py-3 px-6 text-stone-50 text-left">Create GNFT</a></Link>
-              <Link href="/market"><a className="gradientBG-2 py-3 px-6 ml-2 text-stone-50 text-left">Browse GNFTs</a></Link>
+            <p className="max-w-3xl pt-4 px-4 text-lg">
+              GNFT combines a P5.js playground and NFT marketplace to allow anyone to create, mint, and collect
+              generative art NFTs. NFTs provide a decentralized ledger of transactions to validate authenticity and
+              ownership. GNFTs use the InterPlanetary File System for decentralized file storage to ensure your content
+              is secure and accessible.
+            </p>
+            <div className="mt-6 mx-4 flex flex-row flex-wrap gap-2">
+              <Link href="/create">
+                <a className="gradientBG py-3 px-6 text-stone-50 text-left">Create GNFT</a>
+              </Link>
+              <Link href="/market">
+                <a className="gradientBG-2 py-3 px-6 text-stone-50 text-left">Browse GNFTs</a>
+              </Link>
             </div>
           </div>
         </div>

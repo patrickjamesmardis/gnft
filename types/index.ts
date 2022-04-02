@@ -13,6 +13,7 @@ export type { ERC165 } from "./ERC165";
 export type { IERC165 } from "./IERC165";
 export type { GNFT } from "./GNFT";
 export type { GNFTArtistEnumerable } from "./GNFTArtistEnumerable";
+export type { GNFTCreatorEnumerable } from "./GNFTCreatorEnumerable";
 export type { GNFTMarket } from "./GNFTMarket";
 
 export { Ownable__factory } from "./factories/Ownable__factory";
@@ -27,4 +28,5 @@ export { ERC165__factory } from "./factories/ERC165__factory";
 export { IERC165__factory } from "./factories/IERC165__factory";
 export { GNFT__factory } from "./factories/GNFT__factory";
 export { GNFTArtistEnumerable__factory } from "./factories/GNFTArtistEnumerable__factory";
+export { GNFTCreatorEnumerable__factory } from "./factories/GNFTCreatorEnumerable__factory";
 export { GNFTMarket__factory } from "./factories/GNFTMarket__factory";
