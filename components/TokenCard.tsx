@@ -115,13 +115,25 @@ export default function TokenCard(props: { token: Token; darkMode: boolean }) {
               <p className="text-xs pt-2">
                 Creator:{' '}
                 <span className={`text-base ${creatorName === 'you' && 'text-gradient'}`}>
-                  <span>{creatorName}</span>
+                  {creatorName.match(/^@/) ? (
+                    <Link href={`/creator/${creatorName.slice(1)}`} passHref>
+                      <a className="underline">{creatorName}</a>
+                    </Link>
+                  ) : (
+                    <span>{creatorName}</span>
+                  )}
                 </span>
               </p>
               <p className="text-xs">
                 Owner:{' '}
                 <span className={`text-base ${ownerName === 'you' && 'text-gradient'}`}>
-                  <span>{ownerName}</span>
+                  {ownerName.match(/^@/) ? (
+                    <Link href={`/creator/${ownerName.slice(1)}`} passHref>
+                      <a className="underline">{ownerName}</a>
+                    </Link>
+                  ) : (
+                    <span>{ownerName}</span>
+                  )}
                 </span>
               </p>
             </div>

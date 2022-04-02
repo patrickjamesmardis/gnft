@@ -96,14 +96,6 @@ const Wallet = function ({ children }) {
     setMarketContract(
       new ethers.Contract(marketAddress, GNFTMarket__factory.createInterface(), _provider) as GNFTMarket
     );
-
-    const msg = 'TEST';
-    _provider
-      .getSigner()
-      .signMessage(msg)
-      .then(signed => {
-        console.log(signed);
-      });
   };
 
   useEffect(() => {

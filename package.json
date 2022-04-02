@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"**/*.{js,css,scss,json}\" --single-quote --print-width 120 --arrow-parens avoid --tab-width 2"
+    "format": "prettier --write \"**/*.{js,jsx,tx,tsx,css,scss,json}\" --single-quote --print-width 120 --arrow-parens avoid --tab-width 2"
   },
   "dependencies": {
     "@babel/parser": "^7.16.12",

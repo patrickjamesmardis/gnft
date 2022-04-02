@@ -58,11 +58,9 @@ export default function ConnectModal() {
       setUsernameInvalid(false);
       getDocs(query(usersRef, where('username', '==', v))).then(q => {
         if (q.empty) {
-          console.log('username not taken');
           setUsernameTaken(false);
           setUsernameInput(v);
         } else {
-          console.log('username taken');
           setUsernameTaken(true);
         }
       });
@@ -79,7 +77,7 @@ export default function ConnectModal() {
     generateMagicToken().then(token =>
       axios
         .post(
-          `${firebaseUrl}/users/${metadata.publicAddress}`,
+          `${firebaseUrl}/users/${metadata.publicAddress.toLowerCase()}`,
           { username: uname },
           { headers: { Authorization: `Bearer ${token}` } }
         )

@@ -2,11 +2,14 @@ import axios from 'axios';
 import { BigNumber, ethers } from 'ethers';
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
 import { WalletContext, prettyAddress, rpcProvider } from '../../context/Wallet';
 import { gnftAddress, blockExplorerUrls, marketAddress } from '../../context/config';
 import CancelModal from '../../components/CancelModal';
+import { db } from '../../firebaseConfig';
 
 export default function Token() {
   const { account, modalOpen, setModalOpen, setTransactionToken, setTransactionItem, setTransactionPrice } =
@@ -14,6 +17,8 @@ export default function Token() {
   const [tokenURI, setTokenURI] = useState<string>(null);
   const [tokenData, setTokenData] = useState(null);
   const [owner, setOwner] = useState<string>(null);
+  const [ownerName, setOwnerName] = useState<string>(null);
+  const [creatorName, setCreatorName] = useState<string>(null);
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [seller, setSeller] = useState<string>(null);
@@ -36,6 +41,18 @@ export default function Token() {
         const uri = await contract.tokenURI(tokenId);
         const _owner = await contract.ownerOf(tokenId);
         setOwner(_owner.toLowerCase());
+        getDoc(doc(db, 'users', _owner.toLowerCase()))
+          .then(user => {
+            if (user.exists()) {
+              setOwnerName(user.data().username);
+            } else {
+              setOwnerName(null);
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            setOwnerName(null);
+          });
         setTokenURI(uri);
       }
     } catch (error) {
@@ -74,7 +91,21 @@ export default function Token() {
   useEffect(() => {
     const fetchData = async () => {
       if (tokenURI) {
-        axios.get(tokenURI).then(data => setTokenData(data.data));
+        axios.get(tokenURI).then(data => {
+          setTokenData(data.data);
+          getDoc(doc(db, 'users', data.data.artist.toLowerCase()))
+            .then(user => {
+              if (user.exists()) {
+                setCreatorName(user.data().username);
+              } else {
+                setCreatorName(null);
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              setCreatorName(null);
+            });
+        });
       }
     };
     fetchData();
@@ -112,6 +143,10 @@ export default function Token() {
                   <span className="text-base text-gradient">
                     <span>you</span>
                   </span>
+                ) : creatorName ? (
+                  <Link href={`/creator/${creatorName}`} passHref>
+                    <a className="text-base underline">@{creatorName}</a>
+                  </Link>
                 ) : (
                   <span className="text-base">{prettyAddress(tokenData.artist)}</span>
                 )}
@@ -124,6 +159,10 @@ export default function Token() {
                   </span>
                 ) : marketAddress === owner ? (
                   <span className="text-base">GNFT Market</span>
+                ) : ownerName ? (
+                  <Link href={`/creator/${ownerName}`} passHref>
+                    <a className="text-base underline">@{ownerName}</a>
+                  </Link>
                 ) : (
                   <span className="text-base">{prettyAddress(owner)}</span>
                 )}
@@ -225,7 +264,7 @@ export default function Token() {
             <>
               <h3 className="text-2xl pb-2">Token Contract</h3>
               <a
-                className="underline overflow-scroll"
+                className="underline"
                 href={`${blockExplorerUrls[0]}/address/${gnftAddress}`}
                 target="_blank"
                 rel="noreferrer"

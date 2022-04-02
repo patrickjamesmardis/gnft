@@ -38,6 +38,7 @@ export default function WalletPage() {
   const [createdPageSize, setCreatedPageSize] = useState(24);
   const [ownedPageSize, setOwnedPageSize] = useState(24);
   const [tokens, setTokens] = useState<GNFT.TokenDataStructOutput[]>([]);
+  const [shareMessage, setShareMessage] = useState('Share Profile');
 
   useEffect(() => {
     if (!account) {
@@ -70,7 +71,7 @@ export default function WalletPage() {
       };
       getTokens();
     }
-  }, [createdBalance, collectedBalance]);
+  }, [createdBalance, collectedBalance, createdPage, createdPageSize, ownedPage, ownedPageSize]);
 
   const handleCreatedPaginationChange = (e: { page: number; pageSize: number }) => {
     setCreatedPage(e.page);
@@ -104,6 +105,14 @@ export default function WalletPage() {
       header: 'Hash',
     },
   ];
+
+  const handleShare = () => {
+    setShareMessage('Copied Profile URL!');
+    navigator.clipboard.writeText(`https://g-nft.app/creator/${username}`);
+    setTimeout(() => {
+      setShareMessage('Share Profile');
+    }, 2000);
+  };
 
   return (
     <>
@@ -158,14 +167,17 @@ export default function WalletPage() {
                     />
                   </div>
                   <div className="flex flex-row items-center flex-wrap gap-x-4 gap-y-1">
-                    <p className="inline-flex flex-row items-center">
+                    <button className="inline-flex flex-row items-center hover:bg-stone-200 dark:hover:bg-stone-700">
                       <Edit16 className="inline mr-2" />
                       Edit Profile
-                    </p>
-                    <p className="inline-flex flex-row items-center">
+                    </button>
+                    <button
+                      className="inline-flex flex-row items-center hover:bg-stone-200 dark:hover:bg-stone-700"
+                      onClick={handleShare}
+                    >
                       <Share16 className="inline mr-2" />
-                      Share Profile
-                    </p>
+                      {shareMessage}
+                    </button>
                   </div>
                 </div>
               </div>

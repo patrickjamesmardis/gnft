@@ -16,10 +16,10 @@ export default function Market() {
     if (rpcProvider) {
       rpcProvider.tokenContract
         .balanceOf(marketAddress)
-        .then((b) => {
+        .then(b => {
           setBalance(b.toNumber());
         })
-        .catch((error) => console.log(error));
+        .catch(error => console.log(error));
     }
   }, []);
 
@@ -27,9 +27,9 @@ export default function Market() {
     if (balance > 0) {
       rpcProvider.tokenContract
         .tokensOfOwnerByPage(marketAddress, pageSize, page)
-        .then((ts) => {
+        .then(ts => {
           Promise.all(
-            ts.map(async (t) => {
+            ts.map(async t => {
               try {
                 const item = await rpcProvider.marketContract.getGNFTItem(t.id);
                 return {
@@ -54,11 +54,11 @@ export default function Market() {
                 };
               }
             })
-          ).then((_tokens) => {
+          ).then(_tokens => {
             setTokens(_tokens);
           });
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     }
