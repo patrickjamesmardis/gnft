@@ -9,6 +9,8 @@ import TransferModal from '../components/TransferModal';
 import ReceiveModal from '../components/ReceiveModal';
 import ListItemModal from '../components/ListItemModal';
 import PurchaseModal from '../components/PurchaseModal';
+import EditProfileModal from '../components/EditProfileModal';
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Wallet>
@@ -21,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ReceiveModal />
         <ListItemModal />
         <PurchaseModal />
+        <EditProfileModal />
       </Sketch>
     </Wallet>
   );

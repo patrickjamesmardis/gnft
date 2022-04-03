@@ -223,6 +223,10 @@ $stone-50: #fafaf9;
   background-color: $stone-200;
 }
 
+.rounded-full .paper {
+  border-radius: 999999px !important;
+}
+
 @media (prefers-color-scheme: dark) {
   .tokensOverlay {
     background: #1c1917aa;

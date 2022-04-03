@@ -119,7 +119,7 @@ const blocks: { [key: string]: Block } = {
     code: varId => '',
     icon: <div></div>,
   },
-  rect: {
+  rectangle: {
     add: () => {},
     code: varId =>
       `const rectX_${varId} = ${rn(150)};\nconst rectY_${varId} = ${rn(150)};\nconst rectW_${varId} = ${rn(
@@ -306,7 +306,6 @@ export default function Block({ block }: { block: EditorBlock }) {
     const currIdx = getCurrentIndex();
     const id = createId(currIdx + 1);
     const varId = addedBlocks + 1;
-
     const code = blocks.rectangle.code(varId);
     setAddOpen(false);
     handleAdd(code, id);

@@ -20,10 +20,12 @@ type WalletContext = {
   magicUserMeta: MagicUserMetadata | 'INIT_LOAD' | 'LOADING' | 'ERROR';
   marketApproval: boolean;
   marketContract: GNFTMarket;
-  modalOpen: 'CONNECT' | 'GNFT' | 'MATIC' | 'RECEIVE' | 'SELL' | 'PURCHASE' | false;
+  modalOpen: 'CONNECT' | 'GNFT' | 'MATIC' | 'RECEIVE' | 'SELL' | 'PURCHASE' | 'EDIT_PROFILE' | false;
+  profileImage: string;
   provider: ethers.providers.Web3Provider;
   setMarketApproval: Dispatch<SetStateAction<boolean>>;
   setModalOpen: Dispatch<SetStateAction<WalletContext['modalOpen']>>;
+  setProfileImage: Dispatch<SetStateAction<string>>;
   setTransactionItem: Dispatch<SetStateAction<WalletContext['transactionItem']>>;
   setTransactionToken: Dispatch<SetStateAction<WalletContext['transactionToken']>>;
   setTransactionPrice: Dispatch<SetStateAction<WalletContext['transactionPrice']>>;
@@ -88,6 +90,7 @@ const Wallet = function ({ children }) {
   const [transactionToken, setTransactionToken] = useState<WalletContext['transactionToken']>(BigNumber.from(0));
   const [transactionItem, setTransactionItem] = useState<WalletContext['transactionItem']>(BigNumber.from(0));
   const [transactionPrice, setTransactionPrice] = useState<WalletContext['transactionPrice']>(BigNumber.from(0));
+  const [profileImage, setProfileImage] = useState('jazz');
 
   const setupProvider = (m: Magic) => {
     const _provider = new ethers.providers.Web3Provider(m.rpcProvider);
@@ -206,6 +209,11 @@ const Wallet = function ({ children }) {
             } else {
               setUsername(null);
             }
+            if (data.image) {
+              setProfileImage(data.image);
+            } else {
+              setProfileImage('jazz');
+            }
           } else {
             setUsername(null);
           }
@@ -296,6 +304,8 @@ const Wallet = function ({ children }) {
     transactionPrice,
     setTransactionPrice,
     generateMagicToken,
+    profileImage,
+    setProfileImage,
   };
 
   return <WalletContext.Provider value={context}>{children}</WalletContext.Provider>;

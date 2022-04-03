@@ -66,7 +66,7 @@ export default function ConnectModal() {
       });
     } else {
       setUsernameInvalid(true);
-      setUsernameTaken(null);
+      setUsernameTaken(false);
     }
   };
 
@@ -78,7 +78,7 @@ export default function ConnectModal() {
       axios
         .post(
           `${firebaseUrl}/users/${metadata.publicAddress.toLowerCase()}`,
-          { username: uname },
+          { username: uname, image: 'jazz' },
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then(res => {

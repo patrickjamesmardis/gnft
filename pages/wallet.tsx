@@ -32,6 +32,7 @@ export default function WalletPage() {
     setModalOpen,
     transactions,
     updateBalances,
+    profileImage,
   } = useContext(WalletContext);
   const [createdPage, setCreatedPage] = useState(1);
   const [ownedPage, setOwnedPage] = useState(1);
@@ -148,7 +149,11 @@ export default function WalletPage() {
           <>
             <div className="flex flex-row items-center flex-wrap gap-x-6 gap-y-4">
               <div className="flex flex-row items-center flex-wrap gap-4">
-                <Jazzicon diameter={100} seed={jsNumberForAddress(account)} />
+                {profileImage === 'jazz' ? (
+                  <Jazzicon diameter={100} seed={jsNumberForAddress(account)} />
+                ) : (
+                  <Image src={profileImage} width={100} height={100} alt="profile image" className="rounded-full" />
+                )}
                 <div>
                   <h1 className="text-2xl text-gradient font-bold">
                     <span>@{username}</span>
@@ -167,7 +172,12 @@ export default function WalletPage() {
                     />
                   </div>
                   <div className="flex flex-row items-center flex-wrap gap-x-4 gap-y-1">
-                    <button className="inline-flex flex-row items-center hover:bg-stone-200 dark:hover:bg-stone-700">
+                    <button
+                      className="inline-flex flex-row items-center hover:bg-stone-200 dark:hover:bg-stone-700"
+                      onClick={() => {
+                        setModalOpen('EDIT_PROFILE');
+                      }}
+                    >
                       <Edit16 className="inline mr-2" />
                       Edit Profile
                     </button>
