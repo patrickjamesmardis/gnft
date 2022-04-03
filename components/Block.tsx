@@ -80,69 +80,111 @@ const processIfStatement = (env: Env, statement: IfStatement) => {
 };
 
 type Block = {
-  add: () => void;
   code: (varId: number) => string;
   icon: JSX.Element;
 };
 
 const blocks: { [key: string]: Block } = {
   arc: {
-    add: () => {},
-    code: varId => '',
-    icon: <div></div>,
+    code: varId =>
+      `const arcX_${varId} = ${rn(150)};\nconst arcY_${varId} = ${rn(150)};\nconst arcW_${varId} = ${rn(
+        150
+      )};\nconst arcH_${varId} = ${rn(150)};\nconst arcStart_${varId} = ${rn(7)};\nconst arcStop_${varId} = ${rn(
+        7
+      )};\np5.arc(arcX_${varId}, arcY_${varId}, arcW_${varId}, arcH_${varId}, arcStart_${varId}, arcStop_${varId});\n`,
+    icon: (
+      <svg height="16" width="16" className="fill-transparent stroke-stone-700 dark:stroke-stone-50 stroke-1">
+        <path d="M 0 4 C 0 16, 16 16, 16 4" />
+      </svg>
+    ),
   },
   ellipse: {
-    add: () => {},
-    code: varId => '',
-    icon: <div></div>,
+    code: varId =>
+      `const ellipseX_${varId} = ${rn(150)};\nconst ellipseY_${varId} = ${rn(150)};\nconst ellipseW_${varId} = ${rn(
+        150
+      )};\nconst ellipseH_${varId} = ${rn(
+        150
+      )};\np5.ellipse(ellipseX_${varId}, ellipseY_${varId}, ellipseW_${varId}, ellipseH_${varId});\n`,
+    icon: <div className="w-2 h-4 border border-solid border-stone-700 dark:border-stone-50 rounded-full"></div>,
   },
   circle: {
-    add: () => {},
     code: varId =>
       `const circleX_${varId} = ${rn(150)};\nconst circleY_${varId} = ${rn(150)};\nconst circleD_${varId} = ${rn(
         150
       )};\np5.circle(circleX_${varId}, circleY_${varId}, circleD_${varId});\n`,
-    icon: <div></div>,
+    icon: <div className="w-4 h-4 border border-solid border-stone-700 dark:border-stone-50 rounded-full"></div>,
   },
   line: {
-    add: () => {},
-    code: varId => '',
-    icon: <div></div>,
+    code: varId =>
+      `const lineX1_${varId} = ${rn(150)};\nconst lineY1_${varId} = ${rn(150)};\nconst lineX2_${varId} = ${rn(
+        150
+      )};\nconst lineY2_${varId} = ${rn(
+        150
+      )};\np5.line(lineX1_${varId}, lineY1_${varId}, lineX2_${varId}, lineY2_${varId});\n`,
+    icon: (
+      <svg height="16" width="16" className="fill-transparent stroke-stone-700 dark:stroke-stone-50 stroke-1">
+        <line x1="0" y1="16" x2="16" y2="0" />
+      </svg>
+    ),
   },
   point: {
-    add: () => {},
-    code: varId => '',
-    icon: <div></div>,
+    code: varId =>
+      `const pointX_${varId} = ${rn(150)};\nconst pointY_${varId} = ${rn(
+        150
+      )};\np5.point(pointX_${varId}, pointY_${varId});\n`,
+    icon: (
+      <svg
+        height="16"
+        width="16"
+        className="fill-stone-700 dark:fill-stone-50 stroke-stone-700 dark:stroke-stone-50 stroke-1"
+      >
+        <circle cx="8" cy="8" r="2" />
+      </svg>
+    ),
   },
   quad: {
-    add: () => {},
-    code: varId => '',
-    icon: <div></div>,
+    code: varId =>
+      `const quadX1_${varId} = ${rn(150)};\nconst quadY1_${varId} = ${rn(150)};\nconst quadX2_${varId} = ${rn(
+        150
+      )};\nconst quadY2_${varId} = ${rn(150)};\nconst quadX3_${varId} = ${rn(150)};\nconst quadY3_${varId} = ${rn(
+        150
+      )};\nconst quadX4_${varId} = ${rn(150)};\nconst quadY4_${varId} = ${rn(
+        150
+      )};\np5.quad(quadX1_${varId}, quadY1_${varId}, quadX2_${varId}, quadY2_${varId}, quadX3_${varId}, quadY3_${varId}, quadX4_${varId}, quadY4_${varId});\n`,
+    icon: (
+      <svg height="16" width="16" className="fill-transparent stroke-stone-700 dark:stroke-stone-50 stroke-1">
+        <polygon points="0, 0, 16, 0, 8, 16, 0, 16"></polygon>
+      </svg>
+    ),
   },
   rectangle: {
-    add: () => {},
     code: varId =>
       `const rectX_${varId} = ${rn(150)};\nconst rectY_${varId} = ${rn(150)};\nconst rectW_${varId} = ${rn(
         150
       )};\nconst rectH_${varId} = ${rn(
         150
       )};\np5.rect(rectX_${varId}, rectY_${varId}, rectW_${varId}, rectH_${varId});\n`,
-    icon: <div></div>,
+    icon: <div className="w-2 h-4 border border-solid border-stone-700 dark:border-stone-50"></div>,
   },
   square: {
-    add: () => {},
-    code: varId => '',
-    icon: <div></div>,
+    code: varId =>
+      `const squareX_${varId} = ${rn(150)};\nconst squareY_${varId} = ${rn(150)};\nconst squareS_${varId} = ${rn(
+        150
+      )};\np5.square(squareX_${varId}, squareY_${varId}, squareS_${varId});\n`,
+    icon: <div className="w-4 h-4 border border-solid border-stone-700 dark:border-stone-50"></div>,
   },
   triangle: {
-    add: () => {},
     code: varId =>
       `const triX1_${varId} = ${rn(150)};\nconst triY1_${varId} = ${rn(150)};\nconst triX2_${varId} = ${rn(
         150
       )};\nconst triY2_${varId} = ${rn(150)};\nconst triX3_${varId} = ${rn(150)};\nconst triY3_${varId} = ${rn(
         150
       )};\np5.triangle(triX1_${varId}, triY1_${varId}, triX2_${varId}, triY2_${varId}, triX3_${varId}, triY3_${varId});\n`,
-    icon: <div></div>,
+    icon: (
+      <svg height="16" width="16" className="fill-transparent stroke-stone-700 dark:stroke-stone-50 stroke-1">
+        <polygon points="0, 0, 16, 0, 8, 16"></polygon>
+      </svg>
+    ),
   },
 };
 
@@ -302,31 +344,10 @@ export default function Block({ block }: { block: EditorBlock }) {
     updateDraw();
   };
 
-  const addRectangle = () => {
-    const currIdx = getCurrentIndex();
-    const id = createId(currIdx + 1);
-    const varId = addedBlocks + 1;
-    const code = blocks.rectangle.code(varId);
+  const addShape = (shape: string) => {
+    const code = blocks[shape].code(addedBlocks + 1);
     setAddOpen(false);
-    handleAdd(code, id);
-  };
-
-  const addCircle = () => {
-    const currIdx = getCurrentIndex();
-    const id = createId(currIdx + 1);
-    const varId = addedBlocks + 1;
-    const code = blocks.circle.code(varId);
-    setAddOpen(false);
-    handleAdd(code, id);
-  };
-
-  const addTriangle = () => {
-    const currIdx = getCurrentIndex();
-    const id = createId(currIdx + 1);
-    const varId = addedBlocks + 1;
-    const code = blocks.triangle.code(varId);
-    setAddOpen(false);
-    handleAdd(code, id);
+    handleAdd(code, createId(getCurrentIndex() + 1));
   };
 
   const handleInputChange = (key: string, value: number) => {
@@ -357,17 +378,17 @@ export default function Block({ block }: { block: EditorBlock }) {
       </div>
       {addOpen && (
         <div className="order-3 lg:ml-12 addBlockButtons">
-          <button className="py-4 px-4 editorButton" onClick={addRectangle}>
-            <div className="w-4 h-4 border border-solid border-stone-700 dark:border-stone-50"></div>
-          </button>
-          <button className="py-4 px-4 editorButton" onClick={addCircle}>
-            <div className="w-4 h-4 border border-solid border-stone-700 dark:border-stone-50 rounded-full"></div>
-          </button>
-          <button className="py-4 px-4 text-stone-700 dark:text-stone-50 editorButton" onClick={addTriangle}>
-            <svg height="16" width="16" className="fill-transparent stroke-stone-700 dark:stroke-stone-50 stroke-1">
-              <polygon points="0, 0, 16, 0, 8, 16"></polygon>
-            </svg>
-          </button>
+          {Object.keys(blocks).map(block => (
+            <button
+              key={block}
+              className="py-4 px-4 text-stone-700 dark:text-stone-50 editorButton"
+              onClick={() => {
+                addShape(block);
+              }}
+            >
+              {blocks[block].icon}
+            </button>
+          ))}
         </div>
       )}
       {Object.keys(blockVars).length > 0 && (

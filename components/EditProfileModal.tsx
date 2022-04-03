@@ -161,8 +161,8 @@ export default function EditProfileModal() {
             ref={userRef}
             id="username"
             labelText="username"
-            placeholder={username}
-            defaultValue={username}
+            placeholder={username || 'user_1234'}
+            defaultValue={username || ''}
             onChange={handleUsernameChange}
             value={undefined}
             warn={usernameInvalid || usernameTaken}

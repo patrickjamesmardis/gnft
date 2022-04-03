@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { parse } from '@babel/parser';
 import { Editor } from 'brace';
 import shortHash from 'shorthash2';
@@ -19,16 +19,18 @@ export type EditorBlock = {
 
 type SketchContext = {
   addedBlocks: number;
+  bgColor: string;
   draw: string;
   editorBlocks: EditorBlock[];
-  setAddedBlocks: React.Dispatch<React.SetStateAction<number>>;
-  setDraw: React.Dispatch<React.SetStateAction<string>>;
-  setEditorBlocks: React.Dispatch<React.SetStateAction<EditorBlock[]>>;
-  setP5Instance: React.Dispatch<React.SetStateAction<P5>>;
-  setSketchDescription: React.Dispatch<React.SetStateAction<string>>;
-  setSketchError: React.Dispatch<React.SetStateAction<any>>;
-  setSketchPaused: React.Dispatch<React.SetStateAction<boolean>>;
-  setSketchTitle: React.Dispatch<React.SetStateAction<string>>;
+  setAddedBlocks: Dispatch<SetStateAction<number>>;
+  setBgColor: Dispatch<SetStateAction<string>>;
+  setDraw: Dispatch<SetStateAction<string>>;
+  setEditorBlocks: Dispatch<SetStateAction<EditorBlock[]>>;
+  setP5Instance: Dispatch<SetStateAction<P5>>;
+  setSketchDescription: Dispatch<SetStateAction<string>>;
+  setSketchError: Dispatch<SetStateAction<any>>;
+  setSketchPaused: Dispatch<SetStateAction<boolean>>;
+  setSketchTitle: Dispatch<SetStateAction<string>>;
   sketchDescription: string;
   sketchError: any;
   sketchPaused: boolean;
@@ -82,6 +84,7 @@ const Sketch = ({ children }) => {
   const [sketchError, setSketchError] = useState(null);
   const [sketchPaused, setSketchPaused] = useState(false);
   const [sketchTitle, setSketchTitle] = useState('GNFT Sketch');
+  const [bgColor, setBgColor] = useState('#000000');
 
   useEffect(() => {
     if (!window.drawFunc) {
@@ -132,11 +135,19 @@ const Sketch = ({ children }) => {
     !sketchDescription && setSketchDescription('created at g-nft.app');
   }, [sketchDescription]);
 
+  useEffect(() => {
+    if (bgColor && p5Instance) {
+      p5Instance.background(bgColor);
+    }
+  }, [bgColor]);
+
   const context: SketchContext = {
     addedBlocks,
+    bgColor,
     draw,
     editorBlocks,
     setAddedBlocks,
+    setBgColor,
     setDraw,
     setEditorBlocks,
     setP5Instance,

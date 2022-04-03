@@ -102,6 +102,7 @@ $stone-50: #fafaf9;
   .bx--select-input,
   .bx--pagination__button {
     &:focus {
+      background-color: $stone-50;
       box-shadow: none;
     }
   }
@@ -243,6 +244,10 @@ $stone-50: #fafaf9;
     .bx--select-input,
     .bx--pagination__button {
       border-color: $stone-700 !important;
+
+      &:focus {
+        background-color: $stone-900 !important;
+      }
 
       &.bx--btn--disabled {
         &:hover {

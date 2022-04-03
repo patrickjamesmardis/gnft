@@ -244,12 +244,11 @@ export default function ListItemModal() {
           </>
         )}
 
-        {status === 'APPROVAL' ||
-          (status === 'SIGN_TX' && gas.gt(maticBalance) && (
-            <p className="italic" style={{ fontWeight: 900 }}>
-              Insufficient Funds
-            </p>
-          ))}
+        {(status === 'APPROVAL' || status === 'SIGN_TX') && gas.gt(maticBalance) && (
+          <p className="italic" style={{ fontWeight: 900 }}>
+            Insufficient Funds
+          </p>
+        )}
 
         {gas.lt(-1) && <p className="italic">Couldn&apos;t estimate gas. Please try again later.</p>}
 
@@ -268,7 +267,8 @@ export default function ListItemModal() {
               status === 'APPROVAL' ? getMarketApproval() : status === 'SET_PRICE' ? setStatus('SIGN_TX') : listItem();
             }}
             className={`gradientBG ${
-              ((status === 'APPROVAL' || status === 'SIGN_TX') && gas.lte(0)) || !validSellPrice
+              ((status === 'APPROVAL' || status === 'SIGN_TX') && (gas.lte(0) || gas.gt(maticBalance))) ||
+              !validSellPrice
                 ? 'opacity-50'
                 : 'opacity-100'
             }`}

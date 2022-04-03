@@ -4,7 +4,7 @@ import P5 from 'p5';
 import { compileCode } from '@nx-js/compiler-util';
 
 export default function P5Sketch() {
-  const { setP5Instance, setSketchError } = useContext(SketchContext);
+  const { bgColor, setP5Instance, setSketchError } = useContext(SketchContext);
 
   useEffect(() => {
     new P5((p5: P5) => {
@@ -12,7 +12,7 @@ export default function P5Sketch() {
       p5.setup = () => {
         const c = p5.createCanvas(500, 500);
         c.parent('sketch');
-        p5.background(0);
+        p5.background(bgColor);
         p5.fill(255);
       };
       p5.draw = () => {
