@@ -1,16 +1,18 @@
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Pagination } from 'carbon-components-react';
 import { BigNumber } from 'ethers';
 import { rpcProvider } from '../context/Wallet';
 import { marketAddress, Token } from '../context/config';
 import TokenGrid from '../components/TokenGrid';
+import { WalletContext } from '../context/Wallet';
 
 export default function Market() {
   const [balance, setBalance] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
   const [tokens, setTokens] = useState<Token[]>([]);
+  const { modalOpen } = useContext(WalletContext);
 
   useEffect(() => {
     if (rpcProvider) {
@@ -24,7 +26,7 @@ export default function Market() {
   }, []);
 
   useEffect(() => {
-    if (balance > 0) {
+    if (balance > 0 && !modalOpen) {
       rpcProvider.tokenContract
         .tokensOfOwnerByPage(marketAddress, pageSize, page)
         .then(ts => {
@@ -62,7 +64,7 @@ export default function Market() {
           console.log(error);
         });
     }
-  }, [balance, page, pageSize]);
+  }, [balance, page, pageSize, modalOpen]);
 
   const handlePaginationChange = (e: { page: number; pageSize: number }) => {
     setPage(e.page);
