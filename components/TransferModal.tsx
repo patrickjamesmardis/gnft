@@ -54,6 +54,7 @@ export default function TransferModal() {
     setTransactionToken,
     maticBalance,
     updateBalances,
+    profileImage,
   } = useContext(WalletContext);
   const [status, setStatus] = useState<'SELECT_TO' | 'SET_VALUE' | 'SIGN_TX' | 'WAITING' | 'SUCCESS' | 'ERROR'>(
     'SELECT_TO'
@@ -318,7 +319,7 @@ export default function TransferModal() {
           <div className="flex flex-row gap-4 justify-center">
             <div>
               <p className="mb-2 ml-16">From</p>
-              <MiniProfile user={{ id: account, username, image: 'jazz' }} />
+              <MiniProfile user={{ id: account, username, image: profileImage }} />
             </div>
             <div>
               <p className="mb-2 ml-16">To</p>
