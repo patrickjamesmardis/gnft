@@ -26,6 +26,13 @@ export default function TokenCard(props: { token: Token; darkMode: boolean }) {
       ? 'GNFT Market'
       : prettyAddress(props.token.owner)
   );
+  const [sellerName, setSellerName] = useState(
+    account && props.token.seller && account.toLowerCase() === props.token.seller.toLowerCase()
+      ? 'you'
+      : props.token.seller
+      ? prettyAddress(props.token.seller)
+      : ''
+  );
 
   useEffect(() => {
     axios.get(props.token.tokenURI).then(({ data }: { data: Metadata }) => {
@@ -46,6 +53,15 @@ export default function TokenCard(props: { token: Token; darkMode: boolean }) {
         .then(user => {
           if (user.exists()) {
             setOwnerName(`@${user.data().username}`);
+          }
+        })
+        .catch(error => console.log(error));
+    }
+    if (sellerName !== 'you' && props.token.seller) {
+      getDoc(doc(db, 'users', props.token.seller.toLowerCase()))
+        .then(user => {
+          if (user.exists()) {
+            setSellerName(`@${user.data().username}`);
           }
         })
         .catch(error => console.log(error));
@@ -125,9 +141,17 @@ export default function TokenCard(props: { token: Token; darkMode: boolean }) {
                 </span>
               </p>
               <p className="text-xs">
-                Owner:{' '}
+                {props.token.seller ? 'Seller: ' : 'Owner: '}
                 <span className={`text-base ${ownerName === 'you' && 'text-gradient'}`}>
-                  {ownerName.match(/^@/) ? (
+                  {props.token.seller ? (
+                    sellerName.match(/^@/) ? (
+                      <Link href={`/creator/${sellerName.slice(1)}`} passHref>
+                        <a className="underline">{sellerName}</a>
+                      </Link>
+                    ) : (
+                      <span>{sellerName}</span>
+                    )
+                  ) : ownerName.match(/^@/) ? (
                     <Link href={`/creator/${ownerName.slice(1)}`} passHref>
                       <a className="underline">{ownerName}</a>
                     </Link>

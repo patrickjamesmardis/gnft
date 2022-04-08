@@ -19,6 +19,7 @@ export default function Token() {
   const [owner, setOwner] = useState<string>(null);
   const [ownerName, setOwnerName] = useState<string>(null);
   const [creatorName, setCreatorName] = useState<string>(null);
+  const [sellerName, setSellerName] = useState<string>(null);
   const [errorMessage, setErrorMessage] = useState<string>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [seller, setSeller] = useState<string>(null);
@@ -63,7 +64,20 @@ export default function Token() {
   const fetchMarketItem = async (tokenId: number) => {
     const contract = rpcProvider.marketContract;
     const item = await contract.getGNFTItem(tokenId);
-    setSeller(item.seller.toLowerCase());
+    const _seller = item.seller.toLowerCase();
+    setSeller(_seller);
+    getDoc(doc(db, 'users', _seller))
+      .then(user => {
+        if (user.exists()) {
+          setSellerName(user.data().username);
+        } else {
+          setSellerName(null);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        setSellerName(null);
+      });
     setPrice(item.price);
     setItemId(item.itemId);
   };
@@ -174,6 +188,10 @@ export default function Token() {
                     <span className="text-base text-gradient">
                       <span>you</span>
                     </span>
+                  ) : sellerName ? (
+                    <Link href={`/creator/${sellerName}`} passHref>
+                      <a className="text-base underline">@{sellerName}</a>
+                    </Link>
                   ) : (
                     <span className="text-base">{prettyAddress(seller)}</span>
                   )}
