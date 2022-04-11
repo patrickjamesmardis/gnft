@@ -1,5 +1,5 @@
 # GNFT
-Create, mint and collect generative art NFTs.
+Create, mint, and collect generative art NFTs.
 
 ![grid of screenshots of GNFT UI](./process/img/grid.png)
 
