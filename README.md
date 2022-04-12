@@ -3,11 +3,13 @@ Create, mint, and collect generative art NFTs.
 
 ![grid of screenshots of GNFT UI](./process/img/grid.png)
 
-## [Demo Video](https://youtu.be/P07KqlHcTjw)
+## [Demo Video](https://youtu.be/bmDLnQMqvcw)
 
 
 
-https://user-images.githubusercontent.com/59069682/162844385-07caeaf3-68e6-46f0-bb83-969fb1d8941a.mov
+https://user-images.githubusercontent.com/59069682/163070452-1025422f-0976-4627-841a-17d0a8d056f6.mov
+
+
 
 
 
