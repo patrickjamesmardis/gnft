@@ -38,7 +38,9 @@ export default function WalletPage() {
   const [ownedPage, setOwnedPage] = useState(1);
   const [createdPageSize, setCreatedPageSize] = useState(24);
   const [ownedPageSize, setOwnedPageSize] = useState(24);
-  const [tokens, setTokens] = useState<GNFT.TokenDataStructOutput[]>([]);
+  const [created, setCreated] = useState<GNFT.TokenDataStructOutput[]>([]);
+  const [collected, setCollected] = useState<GNFT.TokenDataStructOutput[]>([]);
+  // const [tokens, setTokens] = useState<GNFT.TokenDataStructOutput[]>([]);
   const [shareMessage, setShareMessage] = useState('Share Profile');
 
   useEffect(() => {
@@ -53,19 +55,16 @@ export default function WalletPage() {
     if (createdBalance > 0 || collectedBalance > 0) {
       const getTokens = async () => {
         try {
-          const created =
-            createdBalance < 1
-              ? []
-              : await rpcProvider.tokenContract.tokensOfCreatorByPage(account, createdPageSize, createdPage);
           const collected =
             collectedBalance < 1
               ? []
               : await rpcProvider.tokenContract.tokensOfOwnerByPage(account, ownedPageSize, ownedPage);
-          const tokens = [...created, ...collected].reduce<{ [key: number]: GNFT.TokenDataStructOutput }>(
-            (acc, t) => ({ ...acc, [t.id.toNumber()]: t }),
-            {}
-          );
-          setTokens(Object.values(tokens));
+          setCollected(collected);
+          const created =
+            createdBalance < 1
+              ? []
+              : await rpcProvider.tokenContract.tokensOfCreatorByPage(account, createdPageSize, createdPage);
+          setCreated(created);
         } catch (error) {
           console.log(error);
         }
@@ -246,7 +245,7 @@ export default function WalletPage() {
                     onChange={handleOwnedPaginationChange}
                     pageSize={24}
                   />
-                  <TokenGrid tokens={tokens.filter(t => t.owner.toLowerCase() === account.toLowerCase())} />
+                  <TokenGrid tokens={collected} />
                 </div>
               </Tab>
               <Tab
@@ -266,7 +265,7 @@ export default function WalletPage() {
                     onChange={handleCreatedPaginationChange}
                     pageSize={24}
                   />
-                  <TokenGrid tokens={tokens.filter(t => t.creator.toLowerCase() === account.toLowerCase())} />
+                  <TokenGrid tokens={created} />
                 </div>
               </Tab>
               <Tab id="transactions" label={<p className="text-stone-700 dark:text-stone-300">Transactions</p>}>

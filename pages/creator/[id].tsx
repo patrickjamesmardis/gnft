@@ -19,7 +19,8 @@ export default function Artist() {
   const [ownedPage, setOwnedPage] = useState(1);
   const [createdPageSize, setCreatedPageSize] = useState(24);
   const [ownedPageSize, setOwnedPageSize] = useState(24);
-  const [tokens, setTokens] = useState<GNFT.TokenDataStructOutput[]>([]);
+  const [created, setCreated] = useState<GNFT.TokenDataStructOutput[]>([]);
+  const [collected, setCollected] = useState<GNFT.TokenDataStructOutput[]>([]);
   const [invalidId, setInvalidId] = useState(false);
   const [address, setAddress] = useState('');
   const [image, setImage] = useState('jazz');
@@ -64,15 +65,12 @@ export default function Artist() {
             createdBalance < 1
               ? []
               : await rpcProvider.tokenContract.tokensOfCreatorByPage(address, createdPageSize, createdPage);
+          setCreated(created);
           const collected =
             collectedBalance < 1
               ? []
               : await rpcProvider.tokenContract.tokensOfOwnerByPage(address, ownedPageSize, ownedPage);
-          const tokens = [...created, ...collected].reduce<{ [key: number]: GNFT.TokenDataStructOutput }>(
-            (acc, t) => ({ ...acc, [t.id.toNumber()]: t }),
-            {}
-          );
-          setTokens(Object.values(tokens));
+          setCollected(collected);
         } catch (error) {
           console.log(error);
         }
@@ -137,7 +135,7 @@ export default function Artist() {
                   onChange={handleCreatedPaginationChange}
                   pageSize={24}
                 />
-                <TokenGrid tokens={tokens.filter(t => t.creator.toLowerCase() === address.toLowerCase())} />
+                <TokenGrid tokens={created} />
               </div>
             </Tab>
             <Tab
@@ -157,7 +155,7 @@ export default function Artist() {
                   onChange={handleOwnedPaginationChange}
                   pageSize={24}
                 />
-                <TokenGrid tokens={tokens.filter(t => t.owner.toLowerCase() === address.toLowerCase())} />
+                <TokenGrid tokens={collected} />
               </div>
             </Tab>
           </Tabs>
