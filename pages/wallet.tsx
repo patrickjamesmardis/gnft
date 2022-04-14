@@ -40,7 +40,6 @@ export default function WalletPage() {
   const [ownedPageSize, setOwnedPageSize] = useState(24);
   const [created, setCreated] = useState<GNFT.TokenDataStructOutput[]>([]);
   const [collected, setCollected] = useState<GNFT.TokenDataStructOutput[]>([]);
-  // const [tokens, setTokens] = useState<GNFT.TokenDataStructOutput[]>([]);
   const [shareMessage, setShareMessage] = useState('Share Profile');
 
   useEffect(() => {
