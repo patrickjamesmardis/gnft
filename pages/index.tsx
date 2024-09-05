@@ -1,82 +1,45 @@
 import Head from 'next/head';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useContext, useState } from 'react';
 
-import { rpcProvider } from '../context/Wallet';
-import { marketAddress } from '../context/config';
-import TokenGrid from '../components/TokenGrid';
+import SketchControls from '../components/SketchControls';
+import MintModal from '../components/MintModal';
+import { SketchContext } from '../context/Sketch';
 
-export default function Home() {
-  const [balance, setBalance] = useState(0);
-  const [tokens, setTokens] = useState([]);
-  const page = 1;
-  const pageSize = 6;
+const Editor = dynamic(import('../components/Editor'), { ssr: false });
+const P5Sketch = dynamic(import('../components/P5Sketch'), { ssr: false });
 
-  useEffect(() => {
-    if (rpcProvider) {
-      const getBalance = async () => {
-        try {
-          const b = await rpcProvider.tokenContract.balanceOf(marketAddress);
-          setBalance(b.toNumber());
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getBalance();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (balance > 0) {
-      const getTokens = async () => {
-        try {
-          const t = await rpcProvider.tokenContract.tokensOfOwnerByPage(marketAddress, pageSize, page);
-          setTokens(t);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      getTokens();
-    }
-  }, [balance]);
+export default function Create() {
+  const { sketchTitle, sketchDescription } = useContext(SketchContext);
+  const [mintModalOpen, setMintModalOpen] = useState(false);
+  const [localImage, setLocalImage] = useState(null);
 
   return (
     <>
       <Head>
-        <title>GNFT</title>
-        <meta name="description" content="Create, mint, and collect generative art NFTs." />
+        <title>{sketchTitle}</title>
+        <meta name="description" content="Create a new p5 sketch." />
         <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <div className="text-stone-900 dark:text-stone-50 py-4">
-        <h1 className="text-3xl text-gradient px-4 pb-20">
-          <span>Create, mint, and collect GNFTs</span>
-        </h1>
-        <div className="tokensBG">
-          <div className="tokensOverlay min-h-[516px] pt-4">
-            <h2 className="text-2xl px-4">What is GNFT?</h2>
-            <p className="max-w-3xl pt-4 px-4 text-lg">
-              GNFT combines a P5.js playground and NFT marketplace to allow anyone to create, mint, and collect
-              generative art NFTs. NFTs provide a decentralized ledger of transactions to validate authenticity and
-              ownership. GNFTs use the InterPlanetary File System for decentralized file storage to ensure your content
-              is secure and accessible.
-            </p>
-            <div className="mt-6 mx-4 flex flex-row flex-wrap gap-2">
-              <Link href="/create">
-                <a className="gradientBG py-3 px-6 text-stone-50 text-left">Create GNFT</a>
-              </Link>
-              <Link href="/market">
-                <a className="gradientBG-2 py-3 px-6 text-stone-50 text-left">Browse GNFTs</a>
-              </Link>
-            </div>
+      <div className="pb-4">
+        <div className="px-4 pt-4 pb-4 text-stone-900 dark:text-stone-50">
+          <h1 className="text-2xl text-gradient">
+            <span>{sketchTitle}</span>
+          </h1>
+          <p className="text-stone-900 dark:text-stone-50">{sketchDescription}</p>
+        </div>
+        <div className="flex flex-wrap">
+          <div className="editorContainer mt-4 lg:mt-0 order-2 lg:order-1">
+            <Editor />
+          </div>
+          <div className="sketchContainer lg:pl-3 order-1 lg:order-2 lg:fixed lg:right-0">
+            <P5Sketch />
+            <SketchControls setMintOpen={setMintModalOpen} setLocalImage={setLocalImage} />
           </div>
         </div>
-        <div className="p-4">
-          <h2 className={`text-2xl ${balance > 0 ? 'mb-4' : 'mb-0'}`}>Recent GNFTs</h2>
-          {balance > 0 ? <TokenGrid tokens={tokens} /> : <p>0 GNFTs available</p>}
-        </div>
       </div>
+      <MintModal modalOpen={mintModalOpen} setModalOpen={setMintModalOpen} localImage={localImage} />
     </>
   );
 }

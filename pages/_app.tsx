@@ -1,31 +1,22 @@
+import { useEffect } from 'react';
 import { AppProps } from 'next/app';
 import 'react-phone-input-2/lib/style.css';
 import '../styles/globals.scss';
-import Wallet from '../context/Wallet';
 import Sketch from '../context/Sketch';
-import Shell from '../components/Shell';
-import ConnectModal from '../components/ConnectModal';
-import TransferModal from '../components/TransferModal';
-import ReceiveModal from '../components/ReceiveModal';
-import ListItemModal from '../components/ListItemModal';
-import PurchaseModal from '../components/PurchaseModal';
-import EditProfileModal from '../components/EditProfileModal';
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    document.querySelector('body').classList.add('bg-stone-50');
+    document.querySelector('body').classList.add('text-stone-900');
+    document.querySelector('body').classList.add('dark:bg-stone-900');
+    document.querySelector('body').classList.add('datk:text-stone-50');
+  }, []);
   return (
-    <Wallet>
-      <Sketch>
-        <Shell>
-          <Component {...pageProps} />
-        </Shell>
-        <ConnectModal />
-        <TransferModal />
-        <ReceiveModal />
-        <ListItemModal />
-        <PurchaseModal />
-        <EditProfileModal />
-      </Sketch>
-    </Wallet>
+    <Sketch>
+      <main>
+        <Component {...pageProps} />
+      </main>
+    </Sketch>
   );
 }
 

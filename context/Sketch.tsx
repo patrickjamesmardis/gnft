@@ -80,10 +80,10 @@ const Sketch = ({ children }) => {
   const [editorBlocks, setEditorBlocks] = useState<EditorBlock[]>(defaultBlocks);
   const [p5Instance, setP5Instance] = useState<P5>(null);
   const [pauseFrameCount, setPauseFrameCount] = useState(0);
-  const [sketchDescription, setSketchDescription] = useState('created at g-nft.app');
+  const [sketchDescription, setSketchDescription] = useState('');
   const [sketchError, setSketchError] = useState(null);
   const [sketchPaused, setSketchPaused] = useState(false);
-  const [sketchTitle, setSketchTitle] = useState('GNFT Sketch');
+  const [sketchTitle, setSketchTitle] = useState('p5 Sketch');
   const [bgColor, setBgColor] = useState('#000000');
 
   useEffect(() => {
@@ -128,12 +128,8 @@ const Sketch = ({ children }) => {
   }, [sketchPaused]);
 
   useEffect(() => {
-    !sketchTitle && setSketchTitle('GNFT Sketch');
+    !sketchTitle && setSketchTitle('p5 Sketch');
   }, [sketchTitle]);
-
-  useEffect(() => {
-    !sketchDescription && setSketchDescription('created at g-nft.app');
-  }, [sketchDescription]);
 
   useEffect(() => {
     if (bgColor && p5Instance) {

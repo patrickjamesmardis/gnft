@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { ColorPalette16, Pause16, Play16 } from '@carbon/icons-react';
 import { SketchContext } from '../context/Sketch';
-import { WalletContext } from '../context/Wallet';
 import { ColorResult, SwatchesPicker } from 'react-color';
 
 export default function SketchControls({
@@ -12,7 +11,6 @@ export default function SketchControls({
   setLocalImage: Dispatch<SetStateAction<string>>;
 }) {
   const { bgColor, sketchPaused, setBgColor, setSketchPaused, sketchError } = useContext(SketchContext);
-  const { account, setModalOpen } = useContext(WalletContext);
   const [colorPicker, setColorPicker] = useState(false);
 
   const getSketchBlob = () => {
@@ -49,11 +47,8 @@ export default function SketchControls({
         <button className="gradientBG-2 py-4 px-6 mt-4 text-stone-50 text-left" onClick={toggleColorPicker}>
           {<ColorPalette16 />}
         </button>
-        <button
-          className={`gradientBG py-3 px-6 mt-4 text-stone-50 text-left grow`}
-          onClick={account ? openMintModal : () => setModalOpen('CONNECT')}
-        >
-          {account ? 'Mint Sketch' : 'Connect Wallet to Mint'}
+        <button className={`gradientBG py-3 px-6 mt-4 text-stone-50 text-left grow`} onClick={openMintModal}>
+          Save Sketch
         </button>
       </div>
       {sketchError && (
